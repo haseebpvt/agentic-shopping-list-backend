@@ -1,0 +1,9 @@
+- Receive the image
+- Pass the image to OpenAI API for describing the available products
+- Break down the products available in the image
+- Take each product, and create query and questions for each of them to search in vector db
+  - Each question should represent a distinct area the user might have provided their proferences on
+- Search each product in vector db to find if there is already any user pereferences
+- Validate weather retrieved data does give any user preference
+- Show the selected product based on current preferences
+- If the user give more preferences consider that as well and recreate the preferences
