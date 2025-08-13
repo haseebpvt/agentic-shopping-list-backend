@@ -25,4 +25,5 @@ jobs:
             cd /var/www/agentic-shopping-list-backend/
             git checkout main
             git pull
+            sudo systemctl restart agentic-fastapi
 
