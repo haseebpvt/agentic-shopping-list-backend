@@ -21,5 +21,8 @@ jobs:
           port: ${{ secrets.DROPLET_PORT }}
           username: ${{ secrets.DROPLET_USER }}
           password: ${{ secrets.DROPLET_PASSWORD }}
-          script: ls
+          script: |
+            cd /var/www/agentic-shopping-list-backend/
+            git checkout main
+            git pull
 
