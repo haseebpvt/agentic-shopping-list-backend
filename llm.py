@@ -12,7 +12,7 @@ client = OpenAI(api_key=openai_api_key)
 
 def get_response(input_text: str):
     response = client.responses.create(
-        model="gpt-4.1",
+        model="gpt-5-2025-08-07",
         input=[
             {
                 "role": "system",
