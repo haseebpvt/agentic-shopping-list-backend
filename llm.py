@@ -15,6 +15,10 @@ def get_response(input_text: str):
         model="gpt-4.1",
         input=[
             {
+                "role": "system",
+                "content": "Always respond shortly."
+            },
+            {
                 "role": "user",
                 "content": input_text
             }
