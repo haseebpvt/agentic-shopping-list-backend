@@ -3,6 +3,8 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 
+from test_image import data
+
 load_dotenv()
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -10,19 +12,30 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
 
-def get_response(input_text: str):
+def explain_image(input_text: str, base64_image: str):
     response = client.responses.create(
-        model="gpt-5-2025-08-07",
+        model="gpt-4.1",
         input=[
             {
-                "role": "system",
-                "content": "Always respond shortly."
-            },
-            {
                 "role": "user",
-                "content": input_text
+                "content": [
+                    {"type": "input_text", "text": input_text},
+                    {
+                        "type": "input_image",
+                        "image_url": f"data:image/jpeg;base64,{base64_image}",
+                    }
+                ]
             }
         ],
     )
 
     return response.output_text
+
+
+if __name__ == '__main__':
+    explanation = explain_image(
+        input_text="What is in the image",
+        base64_image=data
+    )
+
+    print(explanation)
