@@ -1,23 +1,11 @@
-from typing import List
-
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-from pydantic import BaseModel
 
 from extract_products import explain_image
 from prompt.describe_image import PROMPT
 from test_image import data
 
 load_dotenv()
-
-
-class Product(BaseModel):
-    title: str
-    description: str
-
-
-class ProductList(BaseModel):
-    products: List[Product]
 
 
 def get_structured_output(text: str):
