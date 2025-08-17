@@ -15,3 +15,5 @@ class ProductQueryList(BaseModel):
 
 def generate_queries(product: Product):
     model = ChatOpenAI()
+
+    model.invoke(product.model_dump())
