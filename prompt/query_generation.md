@@ -1,4 +1,3 @@
-PROMPT = '''
 You are given the title and description of a product.
 Your task is to think in a detailed and imaginative way about all possible scenarios, contexts, and uses for this product — including direct uses, indirect uses, potential alternative applications, related product categories, and any lifestyle, preference, or environmental factors that could influence someone’s choice regarding this product. Think broadly about how different types of people might interact with it, why they might choose it, and in what situations it might be relevant.
 
@@ -20,4 +19,3 @@ Search queries:
 
 Product title: {product_title}
 Product description: {product_description}
-'''
