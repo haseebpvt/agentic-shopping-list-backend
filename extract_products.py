@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 
+from prompt.prompt_loader import get_prompt_template
 from test_image import data
 
 load_dotenv()
@@ -33,8 +34,10 @@ def explain_image(input_text: str, base64_image: str):
 
 
 if __name__ == '__main__':
+    prompt = get_prompt_template("describe_image")
+
     explanation = explain_image(
-        input_text="What is in the image",
+        input_text=prompt,
         base64_image=data
     )
 
