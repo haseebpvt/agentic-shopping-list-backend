@@ -1,7 +1,7 @@
 from langgraph.types import Send
 
 from retriever.graph.type import State, WorkerState
-from retriever.graph.vector_db_search import search_vector_db
+from db.vector_db_search import search_vector_db
 
 
 def orchestrator(state: State):
