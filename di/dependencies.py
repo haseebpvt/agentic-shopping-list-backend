@@ -19,3 +19,6 @@ async def get_tidb_connection():
     )
 
     return connection
+
+# async def get_shopping_table():
+
