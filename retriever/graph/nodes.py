@@ -7,7 +7,7 @@ from retriever.graph.type import State, WorkerState
 
 def orchestrator(state: State):
     """Return a list of queries"""
-    return {"queries": state["queries"]}
+    return {"queries": state.queries}
 
 
 def search_vector_db_node(worker_state: WorkerState, config: RunnableConfig):
@@ -24,4 +24,4 @@ def search_vector_db_node(worker_state: WorkerState, config: RunnableConfig):
 
 
 def spawn_workers(state: State):
-    return [Send("vector_search", {"query": q, "user_id": state["user_id"]}) for q in state["queries"]]
+    return [Send("vector_search", {"query": q, "user_id": state.user_id}) for q in state.queries]
