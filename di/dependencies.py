@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from fastapi import Depends
 from pytidb import TiDBClient, Table
 
-from db.model.shopping import ShoppingItem
+from db.model.shopping_item import ShoppingItem
 
 load_dotenv()
 
