@@ -3,7 +3,7 @@ from typing import Annotated
 
 from dotenv import load_dotenv
 from fastapi import Depends
-from pytidb import TiDBClient
+from pytidb import TiDBClient, Table
 
 from db.model.shopping import ShoppingItem
 
@@ -32,5 +32,5 @@ async def get_tidb_connection():
     return tidb_client
 
 
-async def get_shopping_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]):
+async def get_shopping_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]) -> Table:
     return tidb_client.create_table(schema=ShoppingItem, if_exists="skip")
