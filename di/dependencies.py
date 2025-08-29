@@ -10,11 +10,11 @@ from db.model.shopping_item import ShoppingItem
 load_dotenv()
 
 
-async def get_tidb_connection():
+def get_tidb_connection():
     tidb_client = TiDBClient.connect(
         host=os.getenv("TIDB_HOST"),
         port=int(os.getenv("TIDB_PORT")),
-        user=os.getenv("TIDB_USERNAME"),
+        username=os.getenv("TIDB_USERNAME"),
         password=os.getenv("TIDB_PASSWORD"),
         database=os.getenv("TIDB_DATABASE"),
         ensure_db=True,
@@ -32,5 +32,6 @@ async def get_tidb_connection():
     return tidb_client
 
 
-async def get_shopping_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]) -> Table:
+def get_shopping_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]) -> Table:
     return tidb_client.create_table(schema=ShoppingItem, if_exists="skip")
+

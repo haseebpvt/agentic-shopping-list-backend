@@ -4,7 +4,7 @@ from pytidb import Table
 def search_vector_db(
         query: str,
         table: Table,
-        user_id: int,
+        user_id: str,
         k: int = 5,
 ):
     """

@@ -1,7 +1,8 @@
+from langchain_core.runnables import RunnableConfig
 from langgraph.types import Send
 
+from db.vector_db_search import search_vector_db
 from retriever.graph.type import State, WorkerState
-from db import search_vector_db
 
 
 def orchestrator(state: State):
@@ -9,9 +10,16 @@ def orchestrator(state: State):
     return {"queries": state["queries"]}
 
 
-def search_vector_db_node(worker_state: WorkerState):
+def search_vector_db_node(worker_state: WorkerState, config: RunnableConfig):
     """Search vector db with given query"""
-    results = search_vector_db(query=worker_state["query"])
+    table = config.get("configurable", {}).get("shopping_table")
+
+    results = search_vector_db(
+        query=worker_state["query"],
+        user_id=worker_state["user_id"],
+        k=5,
+        table=table
+    )
     return {"results": results}
 
 
