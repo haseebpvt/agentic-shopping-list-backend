@@ -24,4 +24,4 @@ def search_vector_db_node(worker_state: WorkerState, config: RunnableConfig):
 
 
 def spawn_workers(state: State):
-    return [Send("vector_search", {"query": q}) for q in state["queries"]]
+    return [Send("vector_search", {"query": q, "user_id": state["user_id"]}) for q in state["queries"]]
