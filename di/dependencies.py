@@ -28,8 +28,5 @@ async def get_tidb_connection():
     return tidb_client
 
 
-async def get_text_embedding():
-    pass
-
 async def get_shopping_table():
     pass
