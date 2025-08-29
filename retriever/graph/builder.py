@@ -29,7 +29,7 @@ if __name__ == '__main__':
     table = get_shopping_table(tidb_client=conn)
 
     result = graph.invoke(
-        {"queries": ["food related stuff"], "user_id": "2"},
+        {"queries": ["food related stuff"], "user_id": "3"},
         config={"configurable": {"shopping_list": table}}
     )
     print(result)
