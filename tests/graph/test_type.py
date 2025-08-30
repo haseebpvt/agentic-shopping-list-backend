@@ -9,4 +9,4 @@ def test_product_pretty():
     result = product.pretty()
 
     # Then
-    assert result == "Product name: Hello\nProduct description: Description"
+    assert result == "Product name: Hello, Product description: Description"

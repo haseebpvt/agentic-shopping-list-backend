@@ -7,7 +7,7 @@ class Product(BaseModel):
     description: str
 
     def pretty(self):
-        return f"Product name: {self.title}\nProduct description: {self.description}"
+        return f"Product name: {self.title}, Product description: {self.description}"
 
 
 class ProductList(BaseModel):
