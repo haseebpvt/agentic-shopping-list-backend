@@ -5,6 +5,8 @@ load_dotenv()
 
 
 def get_llm():
-    llm = ChatOpenAI()
+    llm = ChatOpenAI(
+        model="gpt-4.1"
+    )
 
     return llm

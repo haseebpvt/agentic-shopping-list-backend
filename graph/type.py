@@ -6,6 +6,13 @@ class Product(BaseModel):
     title: str
     description: str
 
+    def pretty(self):
+        return f"Product name: {self.title}, Product description: {self.description}"
+
+
+class ProductList(BaseModel):
+    products: List[Product]
+
 
 class SuggestedProduct(BaseModel):
     name: str
@@ -18,9 +25,14 @@ class SuggestedProductList(BaseModel):
     products: List[SuggestedProduct]
 
 
+class PromptList(BaseModel):
+    prompts: List[str]
+
+
 class State(BaseModel):
-    image_base64: str
-    product_items: List[Product]
-    queries: List[str]
-    preference_vector_search_results: List[str]
-    suggested_products: SuggestedProductList
+    image_base64: str = ""
+    user_id: str = ""
+    product_items: ProductList | None = None
+    queries: List[str] = []
+    preference_vector_search_results: List[str] = []
+    suggested_products: SuggestedProductList | None = None

@@ -30,6 +30,6 @@ if __name__ == '__main__':
 
     result = graph.invoke(
         input={"queries": ["food related stuff"], "user_id": "3"},
-        config={"configurable": {"user_preference": table}}
+        config={"configurable": {"preference_table": table}}
     )
     print(result)

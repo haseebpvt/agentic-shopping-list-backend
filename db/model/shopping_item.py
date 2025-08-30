@@ -2,8 +2,8 @@ from pytidb.embeddings import EmbeddingFunction
 from pytidb.schema import TableModel, Field, FullTextField
 
 
-class ShoppingItem(TableModel):
-    __tablename__ = "user_preference"
+class PreferenceTable(TableModel):
+    __tablename__ = "preference"
     __table_args__ = {"extend_existing": True}
 
     id: int | None = Field(default=None, primary_key=True)
