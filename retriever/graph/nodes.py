@@ -12,7 +12,7 @@ def orchestrator(state: State):
 
 def search_vector_db_node(worker_state: WorkerState, config: RunnableConfig):
     """Search vector db with given query"""
-    table = config.get("configurable", {}).get("user_preference")
+    table = config.get("configurable", {}).get("preference_table")
 
     results = search_vector_db(
         query=worker_state["query"],
