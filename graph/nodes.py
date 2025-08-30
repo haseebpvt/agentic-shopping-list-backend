@@ -5,7 +5,7 @@ from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 
 
-def product_suggestion_node(state: State) -> SuggestedProduct:
+def product_suggestion_node(state: State):
     llm = get_llm()
 
     filtered_preferences = set(state.preference_vector_search_results)
@@ -34,7 +34,7 @@ def product_suggestion_node(state: State) -> SuggestedProduct:
         ]
     )
 
-    return output
+    return {"suggested_products": output}
 
 
 def describe_image_node(state: State):
