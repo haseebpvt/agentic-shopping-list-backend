@@ -1,8 +1,10 @@
 from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.runnables import RunnableConfig
 
 from graph.type import State, SuggestedProduct, SuggestedProductList, ProductList, PromptList
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
+from retriever.graph.builder import build_graph
 
 
 def product_suggestion_node(state: State):
@@ -83,5 +85,12 @@ def generate_prompts_node(state: State):
     return {"queries": prompt_list}
 
 
-def vector_search_node(state: State):
-    pass
+def vector_search_node(state: State, config: RunnableConfig):
+    vector_search_graph = build_graph()
+
+    result = vector_search_graph.invoke(
+        input={"queries": state.queries, "user_id": state.user_id},
+        config={"configurable": config},
+    )
+
+    return {"preference_vector_search_results": result}
