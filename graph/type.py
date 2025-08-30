@@ -25,6 +25,10 @@ class SuggestedProductList(BaseModel):
     products: List[SuggestedProduct]
 
 
+class PromptList(BaseModel):
+    prompts: List[str]
+
+
 class State(BaseModel):
     image_base64: str
     product_items: List[Product]

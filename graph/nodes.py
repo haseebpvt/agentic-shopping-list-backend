@@ -1,6 +1,6 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 
-from graph.type import State, SuggestedProduct, SuggestedProductList, ProductList
+from graph.type import State, SuggestedProduct, SuggestedProductList, ProductList, PromptList
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 
@@ -61,7 +61,26 @@ def describe_image_node(state: State):
 
 
 def generate_prompts_node(state: State):
-    pass
+    """Node for generating list of prompts for vector search"""
+    products = list(map(lambda p: p.pretty(), state.product_items))
+
+    data = {
+        "products": products
+    }
+
+    prompt = get_prompt_template("query_generation", **data)
+
+    llm = get_llm()
+
+    result = llm.invoke(
+        input=[
+            HumanMessage(content=prompt),
+        ]
+    )
+
+    prompt_list = llm.with_structured_output(schema=PromptList).invoke(input=result.content)
+
+    return {"queries": prompt_list}
 
 
 def vector_search_node(state: State):
