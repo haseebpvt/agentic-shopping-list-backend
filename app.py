@@ -5,7 +5,7 @@ import uvicorn
 from fastapi import FastAPI, UploadFile, File, Form, Depends
 from pytidb import Table
 from starlette.responses import StreamingResponse
-
+import json
 from di.dependencies import get_shopping_table
 from graph.builder import build_graph
 
@@ -23,7 +23,8 @@ async def product_preference_workflow(
         file: UploadFile = File(...),
         user_id: str = Form(...),
 ):
-    image_base64 = base64.b64encode(file.file.read())
+    image_file_bytes = await file.read()
+    image_base64 = base64.b64encode(image_file_bytes).decode("utf-8")
 
     return StreamingResponse(
         _workflow_stream_generator(
@@ -31,7 +32,7 @@ async def product_preference_workflow(
             image_base64=str(image_base64),
             user_id=user_id,
         ),
-        media_type="text/event-stream",
+        media_type="application/json",
     )
 
 
@@ -48,7 +49,9 @@ async def _workflow_stream_generator(
     )
 
     async for event in stream:
-        yield event
+        node = list(event.keys())[0]
+        print(event)
+        yield node
 
 
 if __name__ == "__main__":
