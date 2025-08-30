@@ -30,9 +30,9 @@ class PromptList(BaseModel):
 
 
 class State(BaseModel):
-    image_base64: str
-    user_id: str
-    product_items: List[Product]
-    queries: List[str]
-    preference_vector_search_results: List[str]
-    suggested_products: SuggestedProductList
+    image_base64: str = ""
+    user_id: str = ""
+    product_items: ProductList | None = None
+    queries: List[str] = []
+    preference_vector_search_results: List[str] = []
+    suggested_products: SuggestedProductList | None = None

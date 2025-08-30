@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from fastapi import Depends
 from pytidb import TiDBClient, Table
 
-from db.model.shopping_item import ShoppingItem
+from db.model.shopping_item import PreferenceTable
 
 load_dotenv()
 
@@ -33,5 +33,5 @@ def get_tidb_connection():
 
 
 def get_shopping_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]) -> Table:
-    return tidb_client.create_table(schema=ShoppingItem, if_exists="skip")
+    return tidb_client.create_table(schema=PreferenceTable, if_exists="skip")
 
