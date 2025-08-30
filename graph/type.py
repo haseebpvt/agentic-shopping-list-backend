@@ -6,6 +6,9 @@ class Product(BaseModel):
     title: str
     description: str
 
+    def pretty(self):
+        return f"Product name: {self.title}\nProduct description: {self.description}"
+
 
 class ProductList(BaseModel):
     products: List[Product]
