@@ -7,7 +7,7 @@ env = Environment(
 )
 
 
-def get_prompt_template(name: str):
+def get_prompt_template(name: str, **kwargs):
     """
     Load and return prompt template with Jinja2
 
@@ -15,4 +15,4 @@ def get_prompt_template(name: str):
     :return: The template string
     """
     template = env.get_template(f"{name}.md")
-    return template.render()
+    return template.render(kwargs)
