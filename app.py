@@ -2,7 +2,7 @@ import base64
 from typing import Annotated
 
 import uvicorn
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, Depends
 from pytidb import Table
 from starlette.responses import StreamingResponse
 
@@ -19,7 +19,7 @@ def read_root():
 
 @app.post("/stream")
 async def product_preference_workflow(
-        table: Annotated[Table, get_shopping_table],
+        table: Annotated[Table, Depends(get_shopping_table)],
         file: UploadFile = File(...),
         user_id: str = Form(...),
 ):
@@ -48,8 +48,7 @@ async def _workflow_stream_generator(
     )
 
     async for event in stream:
-        key = list(event.keys())[0]
-        yield key
+        yield event
 
 
 if __name__ == "__main__":
