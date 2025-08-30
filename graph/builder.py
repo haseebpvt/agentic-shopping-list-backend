@@ -18,7 +18,9 @@ def build_graph():
     builder.add_node("product_suggestion_node", product_suggestion_node)
 
     builder.add_edge(START, "describe_image_node")
-    # Other edges
+    builder.add_edge("describe_image_node", "generate_prompts_node")
+    builder.add_edge("generate_prompts_node", "vector_search_node")
+    builder.add_edge("vector_search_node", "product_suggestion_node")
     builder.add_edge(END, "product_suggestion_node")
 
     return builder.compile()
