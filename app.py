@@ -1,5 +1,13 @@
+import base64
+from typing import Annotated
+
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File, Form
+from pytidb import Table
+from starlette.responses import StreamingResponse
+
+from di.dependencies import get_shopping_table
+from graph.builder import build_graph
 
 app = FastAPI()
 
@@ -7,6 +15,41 @@ app = FastAPI()
 @app.get("/")
 def read_root():
     return {"Hello": "World x"}
+
+
+@app.post("/stream")
+async def product_preference_workflow(
+        table: Annotated[Table, get_shopping_table],
+        file: UploadFile = File(...),
+        user_id: str = Form(...),
+):
+    image_base64 = base64.b64encode(file.file.read())
+
+    return StreamingResponse(
+        _workflow_stream_generator(
+            table=table,
+            image_base64=str(image_base64),
+            user_id=user_id,
+        ),
+        media_type="text/event-stream",
+    )
+
+
+async def _workflow_stream_generator(
+        table: Table,
+        image_base64: str,
+        user_id: str,
+):
+    graph = build_graph()
+
+    stream = graph.astream(
+        input={"image_base64": image_base64, "user_id": user_id},
+        config={"configurable": {"preference_table": table}}
+    )
+
+    async for event in stream:
+        key = list(event.keys())[0]
+        yield key
 
 
 if __name__ == "__main__":
