@@ -7,6 +7,10 @@ class Product(BaseModel):
     description: str
 
 
+class ProductList(BaseModel):
+    products: List[Product]
+
+
 class SuggestedProduct(BaseModel):
     name: str
     reason_for_suggestion: str
