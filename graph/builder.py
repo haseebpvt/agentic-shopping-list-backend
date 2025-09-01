@@ -5,7 +5,7 @@ from graph.nodes import (
     describe_image_node,
     generate_prompts_node,
     vector_search_node,
-    product_suggestion_node
+    product_suggestion_node, check_if_enough_preferences_available
 )
 from graph.type import State
 from util.test_image import data
@@ -22,7 +22,14 @@ def build_graph():
     builder.add_edge(START, "describe_image_node")
     builder.add_edge("describe_image_node", "generate_prompts_node")
     builder.add_edge("generate_prompts_node", "vector_search_node")
-    builder.add_edge("vector_search_node", "product_suggestion_node")
+    builder.add_conditional_edges(
+        "vector_search_node",
+        check_if_enough_preferences_available,
+        {
+            True: "product_suggestion_node",
+            False: END,
+        }
+    )
     builder.add_edge("product_suggestion_node", END)
 
     return builder.compile()

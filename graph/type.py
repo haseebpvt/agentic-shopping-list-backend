@@ -35,4 +35,5 @@ class State(BaseModel):
     product_items: ProductList | None = None
     queries: List[str] = []
     preference_vector_search_results: List[str] = []
+    is_enough_preferences_available: bool = False
     suggested_products: SuggestedProductList | None = None

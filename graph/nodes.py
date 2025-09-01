@@ -10,14 +10,7 @@ from retriever.graph.builder import build_graph
 def product_suggestion_node(state: State):
     llm = get_llm()
 
-    filtered_preferences = set(state.preference_vector_search_results)
-
-    product_str = map(lambda p: str(p), state.product_items)
-
-    data = {
-        "products": list(product_str),
-        "preferences": list(filtered_preferences),
-    }
+    data = _get_preference_and_product_data(state)
 
     prompt = get_prompt_template("choose_product", **data)
 
@@ -95,3 +88,30 @@ def vector_search_node(state: State, config: RunnableConfig):
     )
 
     return {"preference_vector_search_results": result["results"]}
+
+
+def check_if_enough_preferences_available(state: State):
+    llm = get_llm()
+
+    data = _get_preference_and_product_data(state)
+    prompt = get_prompt_template(name="check_if_enough_preferences", **data)
+
+    explanation = llm.invoke(input=prompt)
+    output = llm.with_structured_output({"is_enough_preferences": True}).invoke(explanation.content)
+
+    return output["is_enough_preferences"]
+
+
+
+
+def _get_preference_and_product_data(state: State):
+    filtered_preferences = set(state.preference_vector_search_results)
+
+    product_str = map(lambda p: str(p), state.product_items)
+
+    data = {
+        "products": list(product_str),
+        "preferences": list(filtered_preferences),
+    }
+
+    return data
