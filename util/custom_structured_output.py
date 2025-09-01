@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 def custom_structured_output(
-        model: Union[type[BaseModel], dict[str, str]],
+        model: Union[type[BaseModel], dict],
         llm: BaseChatModel,
         prompt: str,
 ):
