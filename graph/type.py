@@ -28,6 +28,8 @@ class SuggestedProductList(BaseModel):
 class PromptList(BaseModel):
     prompts: List[str]
 
+class EnoughPreferences(BaseModel):
+    is_enough_preferences: bool
 
 class State(BaseModel):
     image_base64: str = ""
@@ -35,5 +37,4 @@ class State(BaseModel):
     product_items: ProductList | None = None
     queries: List[str] = []
     preference_vector_search_results: List[str] = []
-    is_enough_preferences_available: bool = False
     suggested_products: SuggestedProductList | None = None

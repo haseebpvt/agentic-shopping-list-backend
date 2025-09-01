@@ -1,7 +1,7 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 
-from graph.type import State, SuggestedProductList, ProductList, PromptList
+from graph.type import State, SuggestedProductList, ProductList, PromptList, EnoughPreferences
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 from retriever.graph.builder import build_graph
@@ -97,9 +97,9 @@ def check_if_enough_preferences_available(state: State):
     prompt = get_prompt_template(name="check_if_enough_preferences", **data)
 
     explanation = llm.invoke(input=prompt)
-    output = llm.with_structured_output({"is_enough_preferences": True}).invoke(explanation.content)
+    output = llm.with_structured_output(EnoughPreferences).invoke(explanation.content)
 
-    return output["is_enough_preferences"]
+    return output.is_enough_preferences
 
 
 
