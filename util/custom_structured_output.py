@@ -1,14 +1,18 @@
+import json
+from typing import Union
+
 from langchain_core.language_models import BaseChatModel
-from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel
 
 
 def custom_structured_output(
-        model: type[BaseModel],
+        model: Union[type[BaseModel], dict[str, str]],
         llm: BaseChatModel,
         prompt: str,
 ):
-    parser = PydanticOutputParser(pydantic_object=model)
+    # Generate unstructured response
+    explanation = llm.invoke(input=prompt)
 
-    chain = llm | parser
-    return chain.invoke(prompt)
+    output = llm.with_structured_output(model).invoke(explanation.content)
+
+    return output.content
