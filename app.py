@@ -3,12 +3,14 @@ from typing import Annotated
 from uuid import uuid4
 
 import uvicorn
+import json
 from fastapi import FastAPI, UploadFile, File, Form, Depends
 from pytidb import Table
 from starlette.responses import StreamingResponse
 
 from di.dependencies import get_shopping_table
 from graph.builder import build_graph
+from graph.type import StreamMessage, Quiz
 
 app = FastAPI()
 
@@ -56,13 +58,31 @@ async def _workflow_stream_generator(
                 "preference_table": table,
                 "thread_id": thread_id,
             }
-        }
+        },
+        stream_mode=["custom", "updates"],
     )
 
     async for event in stream:
-        node = list(event.keys())[0]
         print(event)
-        yield node
+
+        if event[0] == "updates":
+            # Check if we hit the quiz interrupt
+            if "__interrupt__" in event[1]:
+                data = json.loads(event[1]["__interrupt__"][0].value)
+
+                if "quiz" in data:
+                    message = StreamMessage(
+                        type="quiz_interrupt",
+                        message="Interrupted for getting more preferences from user.",
+                        quiz=Quiz(quiz=data["quiz"])
+                    )
+
+                    yield message.model_dump_json()
+
+                continue
+        if event[0] == "custom":
+            message = event[1]
+            yield json.dumps(message)
 
 
 if __name__ == "__main__":
