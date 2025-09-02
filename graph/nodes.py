@@ -9,31 +9,6 @@ from prompt.prompt_loader import get_prompt_template
 from retriever.graph.builder import build_graph
 
 
-def product_suggestion_node(state: State):
-    llm = get_llm()
-
-    data = _get_product_data(state.product_items) | _get_preferences_data(state.preference_vector_search_results)
-
-    prompt = get_prompt_template("choose_product", **data)
-
-    result = llm.invoke(
-        input=[
-            HumanMessage(content=prompt),
-        ]
-    )
-
-    llm_with_structured_output = llm.with_structured_output(schema=SuggestedProductList)
-
-    output = llm_with_structured_output.invoke(
-        input=[
-            SystemMessage(content="Extract the content from below message"),
-            HumanMessage(content=result.content)
-        ]
-    )
-
-    return {"suggested_products": output}
-
-
 def describe_image_node(state: State):
     """Node for describing the products in the base64 image"""
     _stream_message(StreamMessage(type="describe_image_node", message="Analysing Image.."))
@@ -157,6 +132,31 @@ def user_interrupt_quiz_node(state: State):
     response = interrupt(state.quiz.model_dump_json())
 
     return {"quiz_preferences": response["quiz_results"]}
+
+
+def product_suggestion_node(state: State):
+    llm = get_llm()
+
+    data = _get_product_data(state.product_items) | _get_preferences_data(state.preference_vector_search_results)
+
+    prompt = get_prompt_template("choose_product", **data)
+
+    result = llm.invoke(
+        input=[
+            HumanMessage(content=prompt),
+        ]
+    )
+
+    llm_with_structured_output = llm.with_structured_output(schema=SuggestedProductList)
+
+    output = llm_with_structured_output.invoke(
+        input=[
+            SystemMessage(content="Extract the content from below message"),
+            HumanMessage(content=result.content)
+        ]
+    )
+
+    return {"suggested_products": output}
 
 
 def _get_product_data(product_list: ProductList):
