@@ -1,11 +1,12 @@
 import base64
 from typing import Annotated
+from uuid import uuid4
 
 import uvicorn
 from fastapi import FastAPI, UploadFile, File, Form, Depends
 from pytidb import Table
 from starlette.responses import StreamingResponse
-import json
+
 from di.dependencies import get_shopping_table
 from graph.builder import build_graph
 
@@ -23,6 +24,7 @@ async def get_product_recommendation(
         file: UploadFile = File(...),
         user_id: str = Form(...),
 ):
+    thread_id = str(uuid4())
 
     # Convert image to base64
     image_file_bytes = await file.read()
