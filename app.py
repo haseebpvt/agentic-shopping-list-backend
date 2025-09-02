@@ -64,9 +64,9 @@ async def _workflow_stream_generator(
     )
 
     async for event in stream:
-        node = list(event.keys())[0]
         print(event)
-        yield node
+        message = event[1]["message"]
+        yield message
 
 
 if __name__ == "__main__":
