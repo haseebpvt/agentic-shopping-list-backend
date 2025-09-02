@@ -1,10 +1,10 @@
 import base64
-from typing import Annotated
+import json
+from typing import Annotated, List
 from uuid import uuid4
 
 import uvicorn
-import json
-from fastapi import FastAPI, UploadFile, File, Form, Depends
+from fastapi import FastAPI, UploadFile, File, Form, Depends, Body
 from pytidb import Table
 from starlette.responses import StreamingResponse
 
@@ -43,6 +43,14 @@ async def get_product_recommendation(
     )
 
 
+@app.post("/quiz_resume")
+async def quiz_resume(
+        thread_id: str = Form(...),
+        question_and_answers: List[str] = Body(...)
+):
+    pass
+
+
 async def _workflow_stream_generator(
         table: Table,
         image_base64: str,
@@ -53,12 +61,7 @@ async def _workflow_stream_generator(
 
     stream = graph.astream(
         input={"image_base64": image_base64, "user_id": user_id},
-        config={
-            "configurable": {
-                "preference_table": table,
-                "thread_id": thread_id,
-            }
-        },
+        config=_get_config(table=table, thread_id=thread_id),
         stream_mode=["custom", "updates"],
     )
 
@@ -88,6 +91,15 @@ async def _workflow_stream_generator(
         if event[0] == "custom":
             message = event[1]
             yield json.dumps(message | {"thread_id": thread_id})
+
+
+def _get_config(table: Table, thread_id: str):
+    return {
+        "configurable": {
+            "preference_table": table,
+            "thread_id": thread_id,
+        }
+    }
 
 
 if __name__ == "__main__":
