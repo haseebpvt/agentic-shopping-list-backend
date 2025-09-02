@@ -135,6 +135,13 @@ def user_interrupt_quiz_node(state: State):
 
 
 def product_suggestion_node(state: State):
+    _stream_message(
+        StreamMessage(
+            type="product_suggestion_node",
+            message="Picking the best products for you.."
+        )
+    )
+
     llm = get_llm()
 
     data = _get_product_data(state.product_items) | _get_preferences_data(state.preference_vector_search_results)
