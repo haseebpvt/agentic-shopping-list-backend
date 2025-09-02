@@ -29,7 +29,7 @@ def build_graph():
 
     builder.add_edge(START, "describe_image_node")
     builder.add_conditional_edges(
-        "",
+        "describe_image_node",
         has_product_router,
         {
             "continue": "generate_prompts_node",
