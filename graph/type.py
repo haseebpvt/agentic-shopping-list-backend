@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 
 
 class Product(BaseModel):
@@ -41,6 +41,13 @@ class QuestionAnswer(BaseModel):
 class Quiz(BaseModel):
     quiz: List[QuestionAnswer]
 
+
+class StreamMessage(BaseModel):
+    """For showing updates to user as workflow progresses"""
+    type: str
+    message: str
+    quiz: Optional[Quiz]
+    suggestion: Optional[SuggestedProductList]
 
 class State(BaseModel):
     image_base64: str = ""
