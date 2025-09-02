@@ -17,8 +17,8 @@ def read_root():
     return {"Hello": "World x"}
 
 
-@app.post("/stream")
-async def product_preference_workflow(
+@app.post("/get_product_recommendation")
+async def get_product_recommendation(
         table: Annotated[Table, Depends(get_shopping_table)],
         file: UploadFile = File(...),
         user_id: str = Form(...),
