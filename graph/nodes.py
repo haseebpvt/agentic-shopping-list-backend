@@ -36,6 +36,8 @@ def product_suggestion_node(state: State):
 
 def describe_image_node(state: State):
     """Node for describing the products in the base64 image"""
+    _stream_message(StreamMessage(type="describe_image_node", message="Analysing Image"))
+
     llm = get_llm()
 
     prompt = get_prompt_template("describe_image")
@@ -53,6 +55,11 @@ def describe_image_node(state: State):
     )
 
     product_list = llm.with_structured_output(schema=ProductList).invoke(input=result.content)
+
+    _stream_message(StreamMessage(
+        type="describe_image_node",
+        message=f"Identified {len(product_list.products)} products")
+    )
 
     return {"product_items": product_list}
 
