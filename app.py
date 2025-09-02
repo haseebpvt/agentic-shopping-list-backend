@@ -81,8 +81,8 @@ async def _workflow_stream_generator(
 
                 continue
         if event[0] == "custom":
-            message = event[1]["message"]
-            yield message
+            message = event[1]
+            yield json.dumps(message)
 
 
 if __name__ == "__main__":
