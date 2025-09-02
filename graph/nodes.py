@@ -5,6 +5,7 @@ from graph.type import State, SuggestedProductList, ProductList, PromptList, Eno
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 from retriever.graph.builder import build_graph
+from langgraph.types import interrupt
 
 
 def product_suggestion_node(state: State):
@@ -119,7 +120,14 @@ def quiz_generation_node(state: State):
     explanation = llm.invoke(prompt)
     structured_output = llm.with_structured_output(Quiz).invoke(explanation.content)
 
-    return structured_output
+    return {"quiz": structured_output}
+
+
+def user_interrupt_quiz_node(state: State):
+    # HITL for getting users preferences
+    response = interrupt(state.quiz.model_dump_json())
+
+    return {"quiz_preferences": response["quiz_results"]}
 
 
 def _get_product_data(product_list: ProductList):

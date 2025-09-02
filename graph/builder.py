@@ -8,7 +8,8 @@ from graph.nodes import (
     product_suggestion_node,
     analyse_if_enough_preferences_available,
     product_suggestion_or_quiz_router,
-    quiz_generation_node
+    quiz_generation_node,
+    user_interrupt_quiz_node
 )
 from graph.type import State
 from util.test_image_2 import data
@@ -22,6 +23,7 @@ def build_graph():
     builder.add_node("vector_search_node", vector_search_node)
     builder.add_node("analyse_preferences", analyse_if_enough_preferences_available)
     builder.add_node("quiz_generation_node", quiz_generation_node)
+    builder.add_node("user_interrupt_quiz_node", user_interrupt_quiz_node)
     builder.add_node("product_suggestion_node", product_suggestion_node)
 
     builder.add_edge(START, "describe_image_node")
@@ -36,6 +38,7 @@ def build_graph():
             "not_enough": "quiz_generation_node",
         }
     )
+    builder.add_edge("quiz_generation_node", "user_interrupt_quiz_node")
     builder.add_edge("product_suggestion_node", END)
 
     return builder.compile()

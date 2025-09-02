@@ -50,4 +50,5 @@ class State(BaseModel):
     preference_vector_search_results: List[str] = []
     is_preferences_enough: EnoughPreferences | None = None
     quiz: Quiz | None = None
+    quiz_preferences: List[str] = []
     suggested_products: SuggestedProductList | None = None
