@@ -5,6 +5,7 @@ from uuid import uuid4
 
 import uvicorn
 from fastapi import FastAPI, UploadFile, File, Form, Depends, Body
+from langgraph.types import Command
 from pytidb import Table
 from starlette.responses import StreamingResponse
 
@@ -45,10 +46,18 @@ async def get_product_recommendation(
 
 @app.post("/quiz_resume")
 async def quiz_resume(
+        table: Annotated[Table, Depends(get_shopping_table)],
         thread_id: str = Form(...),
         question_and_answers: List[str] = Body(...)
 ):
-    pass
+    graph = build_graph()
+
+    result = await graph.ainvoke(
+        Command(resume=question_and_answers),
+        config=_get_config(table=table, thread_id=thread_id)
+    )
+
+    return result
 
 
 async def _workflow_stream_generator(
