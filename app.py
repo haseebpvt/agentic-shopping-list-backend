@@ -1,10 +1,10 @@
 import base64
 import json
-from typing import Annotated, List
+from typing import Annotated
 from uuid import uuid4
 
 import uvicorn
-from fastapi import FastAPI, UploadFile, File, Form, Depends, Body
+from fastapi import FastAPI, UploadFile, File, Form, Depends
 from langgraph.types import Command
 from pytidb import Table
 from starlette.responses import StreamingResponse
@@ -12,6 +12,7 @@ from starlette.responses import StreamingResponse
 from di.dependencies import get_shopping_table
 from graph.builder import build_graph
 from graph.type import StreamMessage, Quiz
+from model.quiz_resume_request import QuizResumeRequest
 
 app = FastAPI()
 
@@ -47,14 +48,13 @@ async def get_product_recommendation(
 @app.post("/quiz_resume")
 async def quiz_resume(
         table: Annotated[Table, Depends(get_shopping_table)],
-        thread_id: str = Form(...),
-        question_and_answers: List[str] = Body(...)
+        body: QuizResumeRequest,
 ):
     graph = build_graph()
 
     result = await graph.ainvoke(
-        Command(resume=question_and_answers),
-        config=_get_config(table=table, thread_id=thread_id)
+        Command(resume=body.question_and_answers),
+        config=_get_config(table=table, thread_id=body.thread_id)
     )
 
     return result
