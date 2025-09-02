@@ -56,6 +56,12 @@ def describe_image_node(state: State):
     return {"product_items": product_list}
 
 
+def has_product_router(state: State):
+    if state.product_items.products:
+        return "continue"
+    else:
+        return "end"
+
 def generate_prompts_node(state: State):
     """Node for generating list of prompts for vector search"""
     products = list(map(lambda p: p.pretty(), state.product_items.products))

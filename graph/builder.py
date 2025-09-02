@@ -9,7 +9,8 @@ from graph.nodes import (
     analyse_if_enough_preferences_available,
     product_suggestion_or_quiz_router,
     quiz_generation_node,
-    user_interrupt_quiz_node
+    user_interrupt_quiz_node,
+    has_product_router
 )
 from graph.type import State
 from util.test_image_2 import data
@@ -27,7 +28,14 @@ def build_graph():
     builder.add_node("product_suggestion_node", product_suggestion_node)
 
     builder.add_edge(START, "describe_image_node")
-    builder.add_edge("describe_image_node", "generate_prompts_node")
+    builder.add_conditional_edges(
+        "",
+        has_product_router,
+        {
+            "continue": "generate_prompts_node",
+            "end": END
+        }
+    )
     builder.add_edge("generate_prompts_node", "vector_search_node")
     builder.add_edge("vector_search_node", "analyse_preferences")
     builder.add_conditional_edges(
