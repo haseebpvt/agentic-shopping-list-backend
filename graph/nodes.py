@@ -1,7 +1,7 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 
-from graph.type import State, SuggestedProductList, ProductList, PromptList, EnoughPreferences
+from graph.type import State, SuggestedProductList, ProductList, PromptList, EnoughPreferences, Product, Quiz
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 from retriever.graph.builder import build_graph
@@ -109,6 +109,19 @@ def product_suggestion_or_quiz_router(state: State):
         return "not_enough"
 
 
+def quiz_generation_node(state: State):
+    llm = get_llm()
+
+    # Creates dictionary of data to be passed to prompt
+    data = _get_product_data(state.product_items) | _get_analysis_data(state.is_preferences_enough)
+    prompt = get_prompt_template("quiz_generation", **data)
+
+    explanation = llm.invoke(prompt)
+    structured_output = llm.with_structured_output(Quiz).invoke(explanation.content)
+
+    return structured_output
+
+
 def _get_preference_and_product_data(state: State):
     filtered_preferences = set(state.preference_vector_search_results)
 
@@ -120,3 +133,24 @@ def _get_preference_and_product_data(state: State):
     }
 
     return data
+
+
+def _get_product_data(product_list: ProductList):
+    products = list(map(lambda p: p.pretty(), product_list.products))
+
+    return {
+        "products": products
+    }
+
+
+def _get_preferences_data(preferences_list: list[str]):
+    """Returns list of unique preferences"""
+    return {
+        "preferences": list(set(preferences_list))
+    }
+
+def _get_analysis_data(enough_preferences: EnoughPreferences):
+    """Returns the reason for why or why not the preferences are enough"""
+    return {
+        "analysis": enough_preferences.reason
+    }
