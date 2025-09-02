@@ -30,8 +30,8 @@ def build_graph():
         "analyse_preferences",
         product_suggestion_or_quiz_router,
         {
-            True: "product_suggestion_node",
-            False: END,
+            "enough": "product_suggestion_node",
+            "not_enough": END,
         }
     )
     builder.add_edge("product_suggestion_node", END)
