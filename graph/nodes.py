@@ -97,6 +97,8 @@ def generate_prompts_node(state: State):
 
 def vector_search_node(state: State, config: RunnableConfig):
     """Node for vector searching user preferences"""
+    _stream_message(StreamMessage(type="vector_search_node", message="Searching preferences.."))
+
     vector_search_graph = build_graph()
 
     result = vector_search_graph.invoke(
