@@ -74,7 +74,8 @@ async def _workflow_stream_generator(
                     message = StreamMessage(
                         type="quiz_interrupt",
                         message="Interrupted for getting more preferences from user.",
-                        quiz=Quiz(quiz=data["quiz"])
+                        quiz=Quiz(quiz=data["quiz"]),
+                        thread_id=thread_id,
                     )
 
                     yield message.model_dump_json()
@@ -82,7 +83,7 @@ async def _workflow_stream_generator(
                 continue
         if event[0] == "custom":
             message = event[1]
-            yield json.dumps(message)
+            yield json.dumps(message | {"thread_id": thread_id})
 
 
 if __name__ == "__main__":
