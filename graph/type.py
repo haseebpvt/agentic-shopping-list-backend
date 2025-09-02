@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
 
 
@@ -29,6 +29,7 @@ class PromptList(BaseModel):
     prompts: List[str]
 
 class EnoughPreferences(BaseModel):
+    reason: str = Field(description="The reason of weather the preference is enough or not enough.")
     is_enough_preferences: bool
 
 class State(BaseModel):
@@ -37,5 +38,5 @@ class State(BaseModel):
     product_items: ProductList | None = None
     queries: List[str] = []
     preference_vector_search_results: List[str] = []
-    is_preferences_enough: bool = False
+    is_preferences_enough: EnoughPreferences | None = None
     suggested_products: SuggestedProductList | None = None

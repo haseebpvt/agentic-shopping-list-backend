@@ -99,11 +99,11 @@ def analyse_if_enough_preferences_available(state: State):
     explanation = llm.invoke(input=prompt)
     output = llm.with_structured_output(EnoughPreferences).invoke(explanation.content)
 
-    return {"is_preferences_enough": output.is_enough_preferences}
+    return {"is_preferences_enough": output}
 
 
 def product_suggestion_or_quiz_router(state: State):
-    if state.is_preferences_enough:
+    if state.is_preferences_enough.is_enough_preferences:
         return "enough"
     else:
         return "not_enough"
