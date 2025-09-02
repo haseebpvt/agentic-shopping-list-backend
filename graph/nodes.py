@@ -1,7 +1,7 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 
-from graph.type import State, SuggestedProductList, ProductList, PromptList, EnoughPreferences, Product, Quiz
+from graph.type import State, SuggestedProductList, ProductList, PromptList, EnoughPreferences, Quiz
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 from retriever.graph.builder import build_graph
@@ -120,19 +120,6 @@ def quiz_generation_node(state: State):
     structured_output = llm.with_structured_output(Quiz).invoke(explanation.content)
 
     return structured_output
-
-
-# def _get_preference_and_product_data(state: State):
-#     filtered_preferences = set(state.preference_vector_search_results)
-#
-#     product_str = map(lambda p: str(p), state.product_items)
-#
-#     data = {
-#         "products": list(product_str),
-#         "preferences": list(filtered_preferences),
-#     }
-#
-#     return data
 
 
 def _get_product_data(product_list: ProductList):
