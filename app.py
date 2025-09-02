@@ -81,6 +81,10 @@ async def _workflow_stream_generator(
                     yield message.model_dump_json()
 
                 continue
+
+            if "product_suggestion_node" in event[1]:
+                suggested_product_list = event[1]["product_suggestion_node"]["suggested_products"]
+                yield suggested_product_list.model_dump_json()
         if event[0] == "custom":
             message = event[1]
             yield json.dumps(message | {"thread_id": thread_id})
