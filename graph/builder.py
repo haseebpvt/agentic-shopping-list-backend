@@ -48,6 +48,7 @@ def build_graph():
         }
     )
     builder.add_edge("quiz_generation_node", "user_interrupt_quiz_node")
+    builder.add_node("user_interrupt_quiz_node", "product_suggestion_node")
     builder.add_edge("product_suggestion_node", END)
 
     checkpointer = InMemorySaver()
