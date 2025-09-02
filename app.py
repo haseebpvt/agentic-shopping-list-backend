@@ -57,7 +57,10 @@ async def _workflow_stream_generator(
                 "thread_id": thread_id,
             }
         },
-        stream_mode=["custom", "updates"],
+        stream_mode=[
+            "custom",
+            # "updates",
+        ],
     )
 
     async for event in stream:
