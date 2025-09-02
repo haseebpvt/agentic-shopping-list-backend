@@ -46,6 +46,7 @@ class StreamMessage(BaseModel):
     """For showing updates to user as workflow progresses"""
     type: str
     message: str
+    thread_id: Optional[str] = None
     quiz: Optional[Quiz] = None
     suggestion: Optional[SuggestedProductList] = None
 
