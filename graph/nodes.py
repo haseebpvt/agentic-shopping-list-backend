@@ -1,11 +1,12 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 
-from graph.type import State, SuggestedProductList, ProductList, PromptList, EnoughPreferences, Quiz
+from graph.type import State, SuggestedProductList, ProductList, PromptList, EnoughPreferences, Quiz, StreamMessage
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 from retriever.graph.builder import build_graph
 from langgraph.types import interrupt
+from langgraph.config import get_stream_writer
 
 
 def product_suggestion_node(state: State):
@@ -155,3 +156,7 @@ def _get_analysis_data(enough_preferences: EnoughPreferences):
     return {
         "analysis": enough_preferences.reason
     }
+
+def _stream_message(message: StreamMessage):
+    writer = get_stream_writer()
+    writer(message.model_dump())
