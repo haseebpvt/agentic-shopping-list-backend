@@ -5,10 +5,14 @@ from graph.nodes import (
     describe_image_node,
     generate_prompts_node,
     vector_search_node,
-    product_suggestion_node
+    product_suggestion_node,
+    analyse_if_enough_preferences_available,
+    product_suggestion_or_quiz_router,
+    quiz_generation_node,
+    user_interrupt_quiz_node
 )
 from graph.type import State
-from util.test_image import data
+from util.test_image_2 import data
 
 
 def build_graph():
@@ -17,18 +21,34 @@ def build_graph():
     builder.add_node("describe_image_node", describe_image_node)
     builder.add_node("generate_prompts_node", generate_prompts_node)
     builder.add_node("vector_search_node", vector_search_node)
+    builder.add_node("analyse_preferences", analyse_if_enough_preferences_available)
+    builder.add_node("quiz_generation_node", quiz_generation_node)
+    builder.add_node("user_interrupt_quiz_node", user_interrupt_quiz_node)
     builder.add_node("product_suggestion_node", product_suggestion_node)
 
     builder.add_edge(START, "describe_image_node")
     builder.add_edge("describe_image_node", "generate_prompts_node")
     builder.add_edge("generate_prompts_node", "vector_search_node")
-    builder.add_edge("vector_search_node", "product_suggestion_node")
+    builder.add_edge("vector_search_node", "analyse_preferences")
+    builder.add_conditional_edges(
+        "analyse_preferences",
+        product_suggestion_or_quiz_router,
+        {
+            "enough": "product_suggestion_node",
+            "not_enough": "quiz_generation_node",
+        }
+    )
+    builder.add_edge("quiz_generation_node", "user_interrupt_quiz_node")
     builder.add_edge("product_suggestion_node", END)
 
     return builder.compile()
 
 
 if __name__ == '__main__':
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
     graph = build_graph()
 
     conn = get_tidb_connection()

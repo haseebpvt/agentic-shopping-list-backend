@@ -1,23 +1,17 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 
-from graph.type import State, SuggestedProductList, ProductList, PromptList
+from graph.type import State, SuggestedProductList, ProductList, PromptList, EnoughPreferences, Quiz
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 from retriever.graph.builder import build_graph
+from langgraph.types import interrupt
 
 
 def product_suggestion_node(state: State):
     llm = get_llm()
 
-    filtered_preferences = set(state.preference_vector_search_results)
-
-    product_str = map(lambda p: str(p), state.product_items)
-
-    data = {
-        "products": list(product_str),
-        "preferences": list(filtered_preferences),
-    }
+    data = _get_product_data(state.product_items) | _get_preferences_data(state.preference_vector_search_results)
 
     prompt = get_prompt_template("choose_product", **data)
 
@@ -95,3 +89,63 @@ def vector_search_node(state: State, config: RunnableConfig):
     )
 
     return {"preference_vector_search_results": result["results"]}
+
+
+def analyse_if_enough_preferences_available(state: State):
+    llm = get_llm()
+
+    data = _get_product_data(state.product_items) | _get_preferences_data(state.preference_vector_search_results)
+    prompt = get_prompt_template(name="check_if_enough_preferences", **data)
+
+    explanation = llm.invoke(input=prompt)
+    output = llm.with_structured_output(EnoughPreferences).invoke(explanation.content)
+
+    return {"is_preferences_enough": output}
+
+
+def product_suggestion_or_quiz_router(state: State):
+    if state.is_preferences_enough.is_enough_preferences:
+        return "enough"
+    else:
+        return "not_enough"
+
+
+def quiz_generation_node(state: State):
+    llm = get_llm()
+
+    # Creates dictionary of data to be passed to prompt
+    data = _get_product_data(state.product_items) | _get_analysis_data(state.is_preferences_enough)
+    prompt = get_prompt_template("quiz_generation", **data)
+
+    explanation = llm.invoke(prompt)
+    structured_output = llm.with_structured_output(Quiz).invoke(explanation.content)
+
+    return {"quiz": structured_output}
+
+
+def user_interrupt_quiz_node(state: State):
+    # HITL for getting users preferences
+    response = interrupt(state.quiz.model_dump_json())
+
+    return {"quiz_preferences": response["quiz_results"]}
+
+
+def _get_product_data(product_list: ProductList):
+    products = list(map(lambda p: p.pretty(), product_list.products))
+
+    return {
+        "products": products
+    }
+
+
+def _get_preferences_data(preferences_list: list[str]):
+    """Returns list of unique preferences"""
+    return {
+        "preferences": list(set(preferences_list))
+    }
+
+def _get_analysis_data(enough_preferences: EnoughPreferences):
+    """Returns the reason for why or why not the preferences are enough"""
+    return {
+        "analysis": enough_preferences.reason
+    }
