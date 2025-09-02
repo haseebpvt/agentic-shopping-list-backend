@@ -46,8 +46,8 @@ class StreamMessage(BaseModel):
     """For showing updates to user as workflow progresses"""
     type: str
     message: str
-    quiz: Optional[Quiz]
-    suggestion: Optional[SuggestedProductList]
+    quiz: Optional[Quiz] = None
+    suggestion: Optional[SuggestedProductList] = None
 
 class State(BaseModel):
     image_base64: str = ""
