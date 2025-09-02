@@ -110,6 +110,9 @@ def vector_search_node(state: State, config: RunnableConfig):
 
 
 def analyse_if_enough_preferences_available(state: State):
+    """Node for analysing if enough preferences are available"""
+    _stream_message(StreamMessage(type="analyse_preferences", message="Analysing preferences.."))
+
     llm = get_llm()
 
     data = _get_product_data(state.product_items) | _get_preferences_data(state.preference_vector_search_results)
