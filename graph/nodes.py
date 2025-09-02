@@ -90,7 +90,7 @@ def vector_search_node(state: State, config: RunnableConfig):
     return {"preference_vector_search_results": result["results"]}
 
 
-def check_if_enough_preferences_available(state: State):
+def analyse_if_enough_preferences_available(state: State):
     llm = get_llm()
 
     data = _get_preference_and_product_data(state)
@@ -99,9 +99,14 @@ def check_if_enough_preferences_available(state: State):
     explanation = llm.invoke(input=prompt)
     output = llm.with_structured_output(EnoughPreferences).invoke(explanation.content)
 
-    return output.is_enough_preferences
+    return {"is_preferences_enough": output.is_enough_preferences}
 
 
+def product_suggestion_or_quiz_router(state: State):
+    if state.is_preferences_enough:
+        return "enough"
+    else:
+        return "not_enough"
 
 
 def _get_preference_and_product_data(state: State):
