@@ -35,6 +35,7 @@ async def get_product_recommendation(
             table=table,
             image_base64=str(image_base64),
             user_id=user_id,
+            thread_id=thread_id,
         ),
         media_type="application/json",
     )
@@ -44,12 +45,18 @@ async def _workflow_stream_generator(
         table: Table,
         image_base64: str,
         user_id: str,
+        thread_id: str,
 ):
     graph = build_graph()
 
     stream = graph.astream(
         input={"image_base64": image_base64, "user_id": user_id},
-        config={"configurable": {"preference_table": table}}
+        config={
+            "configurable": {
+                "preference_table": table,
+                "thread_id": thread_id,
+            }
+        }
     )
 
     async for event in stream:
