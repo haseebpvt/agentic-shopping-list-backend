@@ -23,6 +23,8 @@ async def get_product_recommendation(
         file: UploadFile = File(...),
         user_id: str = Form(...),
 ):
+
+    # Convert image to base64
     image_file_bytes = await file.read()
     image_base64 = base64.b64encode(image_file_bytes).decode("utf-8")
 
