@@ -1,12 +1,12 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
+from langgraph.config import get_stream_writer
+from langgraph.types import interrupt
 
 from graph.type import State, SuggestedProductList, ProductList, PromptList, EnoughPreferences, Quiz, StreamMessage
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 from retriever.graph.builder import build_graph
-from langgraph.types import interrupt
-from langgraph.config import get_stream_writer
 
 
 def product_suggestion_node(state: State):
@@ -70,6 +70,7 @@ def has_product_router(state: State):
     else:
         return "end"
 
+
 def generate_prompts_node(state: State):
     """Node for generating list of prompts for vector search"""
     _stream_message(StreamMessage(type="generate_prompts_node", message="Preparing to search preferences.."))
@@ -125,6 +126,13 @@ def analyse_if_enough_preferences_available(state: State):
 
 
 def product_suggestion_or_quiz_router(state: State):
+    _stream_message(
+        StreamMessage(
+            type="quiz_generation_node",
+            message="Hmm.. looks like I need more insights from you.."
+        )
+    )
+
     if state.is_preferences_enough.is_enough_preferences:
         return "enough"
     else:
@@ -165,11 +173,13 @@ def _get_preferences_data(preferences_list: list[str]):
         "preferences": list(set(preferences_list))
     }
 
+
 def _get_analysis_data(enough_preferences: EnoughPreferences):
     """Returns the reason for why or why not the preferences are enough"""
     return {
         "analysis": enough_preferences.reason
     }
+
 
 def _stream_message(message: StreamMessage):
     writer = get_stream_writer()
