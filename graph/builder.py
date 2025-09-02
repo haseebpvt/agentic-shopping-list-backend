@@ -11,7 +11,7 @@ from graph.nodes import (
     quiz_generation_node
 )
 from graph.type import State
-from util.test_image import data
+from util.test_image_2 import data
 
 
 def build_graph():
