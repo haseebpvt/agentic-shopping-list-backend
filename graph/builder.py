@@ -17,7 +17,7 @@ from graph.type import State
 from util.test_image_2 import data
 
 
-def build_graph():
+def build_graph(checkpointer: InMemorySaver):
     builder = StateGraph(State)
 
     builder.add_node("describe_image_node", describe_image_node)
@@ -50,8 +50,6 @@ def build_graph():
     builder.add_edge("quiz_generation_node", "user_interrupt_quiz_node")
     builder.add_edge("user_interrupt_quiz_node", "product_suggestion_node")
     builder.add_edge("product_suggestion_node", END)
-
-    checkpointer = InMemorySaver()
 
     return builder.compile(checkpointer=checkpointer)
 
