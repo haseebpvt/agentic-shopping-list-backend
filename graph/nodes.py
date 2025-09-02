@@ -126,13 +126,6 @@ def analyse_if_enough_preferences_available(state: State):
 
 
 def product_suggestion_or_quiz_router(state: State):
-    _stream_message(
-        StreamMessage(
-            type="quiz_generation_node",
-            message="Hmm.. looks like I need more insights from you.."
-        )
-    )
-
     if state.is_preferences_enough.is_enough_preferences:
         return "enough"
     else:
@@ -140,6 +133,13 @@ def product_suggestion_or_quiz_router(state: State):
 
 
 def quiz_generation_node(state: State):
+    _stream_message(
+        StreamMessage(
+            type="quiz_generation_node",
+            message="Hmm.. looks like I need more insights from you.."
+        )
+    )
+
     llm = get_llm()
 
     # Creates dictionary of data to be passed to prompt
