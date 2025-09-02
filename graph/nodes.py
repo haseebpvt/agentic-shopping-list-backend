@@ -10,7 +10,7 @@ from retriever.graph.builder import build_graph
 def product_suggestion_node(state: State):
     llm = get_llm()
 
-    data = _get_preference_and_product_data(state)
+    data = _get_product_data(state.product_items) | _get_preferences_data(state.preference_vector_search_results)
 
     prompt = get_prompt_template("choose_product", **data)
 
@@ -93,7 +93,7 @@ def vector_search_node(state: State, config: RunnableConfig):
 def analyse_if_enough_preferences_available(state: State):
     llm = get_llm()
 
-    data = _get_preference_and_product_data(state)
+    data = _get_product_data(state.product_items) | _get_preferences_data(state.preference_vector_search_results)
     prompt = get_prompt_template(name="check_if_enough_preferences", **data)
 
     explanation = llm.invoke(input=prompt)
@@ -122,17 +122,17 @@ def quiz_generation_node(state: State):
     return structured_output
 
 
-def _get_preference_and_product_data(state: State):
-    filtered_preferences = set(state.preference_vector_search_results)
-
-    product_str = map(lambda p: str(p), state.product_items)
-
-    data = {
-        "products": list(product_str),
-        "preferences": list(filtered_preferences),
-    }
-
-    return data
+# def _get_preference_and_product_data(state: State):
+#     filtered_preferences = set(state.preference_vector_search_results)
+#
+#     product_str = map(lambda p: str(p), state.product_items)
+#
+#     data = {
+#         "products": list(product_str),
+#         "preferences": list(filtered_preferences),
+#     }
+#
+#     return data
 
 
 def _get_product_data(product_list: ProductList):
