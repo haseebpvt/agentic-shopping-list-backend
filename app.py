@@ -56,7 +56,8 @@ async def _workflow_stream_generator(
                 "preference_table": table,
                 "thread_id": thread_id,
             }
-        }
+        },
+        stream_mode=["custom", "updates"],
     )
 
     async for event in stream:
