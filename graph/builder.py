@@ -1,3 +1,4 @@
+from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import StateGraph, START, END
 
 from di.dependencies import get_tidb_connection, get_shopping_table
@@ -49,7 +50,9 @@ def build_graph():
     builder.add_edge("quiz_generation_node", "user_interrupt_quiz_node")
     builder.add_edge("product_suggestion_node", END)
 
-    return builder.compile()
+    checkpointer = InMemorySaver()
+
+    return builder.compile(checkpointer=checkpointer)
 
 
 if __name__ == '__main__':
