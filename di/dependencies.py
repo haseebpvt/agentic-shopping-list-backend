@@ -3,6 +3,7 @@ from typing import Annotated
 
 from dotenv import load_dotenv
 from fastapi import Depends
+from langgraph.checkpoint.memory import InMemorySaver
 from pytidb import TiDBClient, Table
 
 from db.model.shopping_item import PreferenceTable
@@ -35,3 +36,8 @@ def get_tidb_connection():
 def get_shopping_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]) -> Table:
     return tidb_client.create_table(schema=PreferenceTable, if_exists="skip")
 
+
+in_memory_saver = InMemorySaver()
+
+def get_checkpoint_saver():
+    return in_memory_saver

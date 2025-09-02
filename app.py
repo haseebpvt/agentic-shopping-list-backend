@@ -1,16 +1,19 @@
 import base64
+import json
 from typing import Annotated
 from uuid import uuid4
 
 import uvicorn
-import json
 from fastapi import FastAPI, UploadFile, File, Form, Depends
+from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.types import Command
 from pytidb import Table
 from starlette.responses import StreamingResponse
 
-from di.dependencies import get_shopping_table
+from di.dependencies import get_shopping_table, get_checkpoint_saver
 from graph.builder import build_graph
 from graph.type import StreamMessage, Quiz
+from model.quiz_resume_request import QuizResumeRequest
 
 app = FastAPI()
 
@@ -23,6 +26,7 @@ def read_root():
 @app.post("/get_product_recommendation")
 async def get_product_recommendation(
         table: Annotated[Table, Depends(get_shopping_table)],
+        checkpointer: Annotated[InMemorySaver, Depends(get_checkpoint_saver)],
         file: UploadFile = File(...),
         user_id: str = Form(...),
 ):
@@ -38,9 +42,26 @@ async def get_product_recommendation(
             image_base64=str(image_base64),
             user_id=user_id,
             thread_id=thread_id,
+            checkpointer=checkpointer,
         ),
         media_type="application/json",
     )
+
+
+@app.post("/quiz_resume")
+async def quiz_resume(
+        table: Annotated[Table, Depends(get_shopping_table)],
+        checkpointer: Annotated[InMemorySaver, Depends(get_checkpoint_saver)],
+        body: QuizResumeRequest,
+):
+    graph = build_graph(checkpointer=checkpointer)
+
+    result = await graph.ainvoke(
+        Command(resume={"quiz_results": body.question_and_answers}),
+        config=_get_config(table=table, thread_id=body.thread_id)
+    )
+
+    return result
 
 
 async def _workflow_stream_generator(
@@ -48,17 +69,13 @@ async def _workflow_stream_generator(
         image_base64: str,
         user_id: str,
         thread_id: str,
+        checkpointer: InMemorySaver,
 ):
-    graph = build_graph()
+    graph = build_graph(checkpointer=checkpointer)
 
     stream = graph.astream(
         input={"image_base64": image_base64, "user_id": user_id},
-        config={
-            "configurable": {
-                "preference_table": table,
-                "thread_id": thread_id,
-            }
-        },
+        config=_get_config(table=table, thread_id=thread_id),
         stream_mode=["custom", "updates"],
     )
 
@@ -88,6 +105,15 @@ async def _workflow_stream_generator(
         if event[0] == "custom":
             message = event[1]
             yield json.dumps(message | {"thread_id": thread_id})
+
+
+def _get_config(table: Table, thread_id: str):
+    return {
+        "configurable": {
+            "preference_table": table,
+            "thread_id": thread_id,
+        }
+    }
 
 
 if __name__ == "__main__":
