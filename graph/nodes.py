@@ -36,7 +36,7 @@ def product_suggestion_node(state: State):
 
 def describe_image_node(state: State):
     """Node for describing the products in the base64 image"""
-    _stream_message(StreamMessage(type="describe_image_node", message="Analysing Image"))
+    _stream_message(StreamMessage(type="describe_image_node", message="Analysing Image.."))
 
     llm = get_llm()
 
@@ -72,6 +72,8 @@ def has_product_router(state: State):
 
 def generate_prompts_node(state: State):
     """Node for generating list of prompts for vector search"""
+    _stream_message(StreamMessage(type="generate_prompts_node", message="Preparing to search preferences.."))
+
     products = list(map(lambda p: p.pretty(), state.product_items.products))
 
     data = {
