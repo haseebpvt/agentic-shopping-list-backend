@@ -54,9 +54,10 @@ if __name__ == '__main__':
     conn = get_tidb_connection()
     table = get_shopping_table(tidb_client=conn)
 
-    result = graph.invoke(
+    stream = graph.stream(
         input={"image_base64": data, "user_id": "4"},
         config={"configurable": {"preference_table": table}}
     )
 
-    print(result)
+    for item in stream:
+        print(item)
