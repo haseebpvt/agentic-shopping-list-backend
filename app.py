@@ -12,6 +12,7 @@ from starlette.responses import StreamingResponse
 
 from di.dependencies import get_preference_table, get_checkpoint_saver
 from graph.builder import build_graph
+from extractor.graph.builder import build_graph as build_extractor_graph
 from graph.type import StreamMessage, Quiz
 from model.quiz_resume_request import QuizResumeRequest
 
@@ -63,6 +64,19 @@ async def quiz_resume(
 
     return result
 
+
+@app.post("/insert_data")
+async def insert_shopping_list_and_preferences(
+        user_id: str = Form(...),
+        user_text: str = Form(...),
+):
+    graph = build_extractor_graph()
+
+    result = await graph.ainvoke(
+        input={"user_id": user_id, "user_text": user_text}
+    )
+
+    return result
 
 async def _workflow_stream_generator(
         table: Table,
