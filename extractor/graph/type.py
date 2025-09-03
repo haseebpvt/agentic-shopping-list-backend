@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 
 class ShoppingItem(BaseModel):
+    user_id: str
     item_name: str
     quantity: str
     note: str
