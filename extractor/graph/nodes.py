@@ -1,3 +1,5 @@
+from langchain_core.runnables import RunnableConfig
+
 from extractor.graph.type import State, ShoppingAndPreferenceExtraction
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
@@ -15,9 +17,11 @@ def extract_shopping_and_preference_node(state: State):
     return {"shopping_list": structured_putput.shopping_list, "preference": structured_putput.preference}
 
 
-def save_preference_node(state: State):
+def save_preference_node(state: State, config: RunnableConfig):
+    table = config.get("configurable", {}).get("preference_table")
     pass
 
 
-def save_shopping_list_node(state: State):
+def save_shopping_list_node(state: State, config: RunnableConfig):
+    table = config.get("configurable", {}).get("shopping_list_table")
     pass
