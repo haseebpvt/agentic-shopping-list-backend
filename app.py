@@ -10,9 +10,9 @@ from langgraph.types import Command
 from pytidb import Table
 from starlette.responses import StreamingResponse
 
-from di.dependencies import get_preference_table, get_checkpoint_saver
-from graph.builder import build_graph
+from di.dependencies import get_preference_table, get_checkpoint_saver, get_shopping_list_table
 from extractor.graph.builder import build_graph as build_extractor_graph
+from graph.builder import build_graph
 from graph.type import StreamMessage, Quiz
 from model.quiz_resume_request import QuizResumeRequest
 
@@ -67,16 +67,27 @@ async def quiz_resume(
 
 @app.post("/insert_data")
 async def insert_shopping_list_and_preferences(
+        preference_table: Annotated[Table, Depends(get_preference_table)],
+        shopping_list_table: Annotated[Table, Depends(get_shopping_list_table)],
         user_id: str = Form(...),
         user_text: str = Form(...),
 ):
     graph = build_extractor_graph()
 
+    config = {
+        "configurable": {
+            "preference_table": preference_table,
+            "shopping_list_table": shopping_list_table
+        }
+    }
+
     result = await graph.ainvoke(
-        input={"user_id": user_id, "user_text": user_text}
+        input={"user_id": user_id, "user_text": user_text},
+        config=config,
     )
 
     return result
+
 
 async def _workflow_stream_generator(
         table: Table,

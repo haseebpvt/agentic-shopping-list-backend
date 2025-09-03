@@ -15,6 +15,6 @@ def build_graph():
     graph.add_edge("extract_shopping_and_preference_node", "save_preference_node")
     graph.add_edge("extract_shopping_and_preference_node", "save_shopping_list_node")
     graph.add_edge("save_preference_node", END)
-    graph.add_node("save_shopping_list_node", END)
+    graph.add_edge("save_shopping_list_node", END)
 
     return graph.compile()
