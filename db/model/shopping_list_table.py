@@ -3,7 +3,7 @@ from pytidb.schema import TableModel, Field, FullTextField
 
 
 class ShoppingListTable(TableModel):
-    __tablename__ = "shopping_list"
+    __tablename__ = "shopping_list_table"
     __table_args__ = {"extend_existing": True}
 
     id: int | None = Field(default=None, primary_key=True)
