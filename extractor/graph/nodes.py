@@ -1,8 +1,11 @@
 from langchain_core.runnables import RunnableConfig
 
+from db.model.preference_table import PreferenceTable
+from db.model.shopping_list_table import ShoppingListTable
 from extractor.graph.type import State, ShoppingAndPreferenceExtraction
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
+from pytidb import Table
 
 
 def extract_shopping_and_preference_node(state: State):
@@ -18,10 +21,30 @@ def extract_shopping_and_preference_node(state: State):
 
 
 def save_preference_node(state: State, config: RunnableConfig):
-    table = config.get("configurable", {}).get("preference_table")
-    pass
+    table: Table = config.get("configurable", {}).get("preference_table")
+
+    preferences_table_data = map(
+        lambda text: PreferenceTable(
+            user_id=state.user_id,
+            text=text,
+        ),
+        state.preference.preference,
+    )
+
+    table.bulk_insert(list(preferences_table_data))
 
 
 def save_shopping_list_node(state: State, config: RunnableConfig):
-    table = config.get("configurable", {}).get("shopping_list_table")
-    pass
+    table: Table = config.get("configurable", {}).get("shopping_list_table")
+
+    shopping_list_table_data = map(
+        lambda item: ShoppingListTable(
+            user_id=state.user_id,
+            item_name=item.item_name,
+            quantity=item.quantity,
+            note=item.note,
+        ),
+        state.shopping_list.shopping_list,
+    )
+
+    table.bulk_insert(list(shopping_list_table_data))

@@ -4,7 +4,6 @@ from pydantic import BaseModel
 
 
 class ShoppingItem(BaseModel):
-    user_id: str
     item_name: str
     quantity: str
     note: str
@@ -24,6 +23,7 @@ class ShoppingAndPreferenceExtraction(BaseModel):
 
 
 class State(BaseModel):
+    user_id: str
     user_text: str = ""
     shopping_list: ShoppingList | None = None
     preference: UserPreference | None = None
