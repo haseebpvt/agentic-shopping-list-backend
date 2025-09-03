@@ -13,3 +13,11 @@ def extract_shopping_and_preference_node(state: State):
     structured_putput = llm.with_structured_output(ShoppingAndPreferenceExtraction).invoke(explanation.content)
 
     return {"shopping_list": structured_putput.shopping_list, "preference": structured_putput.preference}
+
+
+def save_preference_node(state: State):
+    pass
+
+
+def save_shopping_list_node(state: State):
+    pass
