@@ -39,5 +39,6 @@ def get_shopping_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_conne
 
 in_memory_saver = InMemorySaver()
 
+
 def get_checkpoint_saver():
     return in_memory_saver
