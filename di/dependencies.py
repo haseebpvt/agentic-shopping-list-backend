@@ -33,7 +33,7 @@ def get_tidb_connection():
     return tidb_client
 
 
-def get_shopping_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]) -> Table:
+def get_preference_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]) -> Table:
     return tidb_client.create_table(schema=PreferenceTable, if_exists="skip")
 
 

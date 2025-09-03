@@ -10,7 +10,7 @@ from langgraph.types import Command
 from pytidb import Table
 from starlette.responses import StreamingResponse
 
-from di.dependencies import get_shopping_table, get_checkpoint_saver
+from di.dependencies import get_preference_table, get_checkpoint_saver
 from graph.builder import build_graph
 from graph.type import StreamMessage, Quiz
 from model.quiz_resume_request import QuizResumeRequest
@@ -25,7 +25,7 @@ def read_root():
 
 @app.post("/get_product_recommendation")
 async def get_product_recommendation(
-        table: Annotated[Table, Depends(get_shopping_table)],
+        table: Annotated[Table, Depends(get_preference_table)],
         checkpointer: Annotated[InMemorySaver, Depends(get_checkpoint_saver)],
         file: UploadFile = File(...),
         user_id: str = Form(...),
@@ -50,7 +50,7 @@ async def get_product_recommendation(
 
 @app.post("/quiz_resume")
 async def quiz_resume(
-        table: Annotated[Table, Depends(get_shopping_table)],
+        table: Annotated[Table, Depends(get_preference_table)],
         checkpointer: Annotated[InMemorySaver, Depends(get_checkpoint_saver)],
         body: QuizResumeRequest,
 ):
