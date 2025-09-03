@@ -3,7 +3,7 @@ from pytidb.schema import TableModel, Field, FullTextField
 
 
 class PreferenceTable(TableModel):
-    __tablename__ = "preference"
+    __tablename__ = "preference_table"
     __table_args__ = {"extend_existing": True}
 
     id: int | None = Field(default=None, primary_key=True)
