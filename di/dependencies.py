@@ -6,7 +6,7 @@ from fastapi import Depends
 from langgraph.checkpoint.memory import InMemorySaver
 from pytidb import TiDBClient, Table
 
-from db.model.shopping_item import PreferenceTable
+from db.model.preference_table import PreferenceTable
 
 load_dotenv()
 
