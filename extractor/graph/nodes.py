@@ -35,7 +35,9 @@ def save_preference_node(state: State, config: RunnableConfig):
         state.preference.preference,
     )
 
-    table.bulk_insert(list(preferences_table_data))
+    result = table.bulk_insert(list(preferences_table_data))
+
+    return {}
 
 
 def save_shopping_list_node(state: State, config: RunnableConfig):
@@ -55,4 +57,6 @@ def save_shopping_list_node(state: State, config: RunnableConfig):
         state.shopping_list.shopping_list,
     )
 
-    table.bulk_insert(list(shopping_list_table_data))
+    result = table.bulk_insert(list(shopping_list_table_data))
+
+    return {}
