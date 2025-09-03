@@ -7,6 +7,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from pytidb import TiDBClient, Table
 
 from db.model.preference_table import PreferenceTable
+from db.model.shopping_list_table import ShoppingListTable
 
 load_dotenv()
 
@@ -35,6 +36,10 @@ def get_tidb_connection():
 
 def get_preference_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]) -> Table:
     return tidb_client.create_table(schema=PreferenceTable, if_exists="skip")
+
+
+def get_shopping_list_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]) -> Table:
+    return tidb_client.create_table(schema=ShoppingListTable, if_exists="skip")
 
 
 in_memory_saver = InMemorySaver()
