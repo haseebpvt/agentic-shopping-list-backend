@@ -1,6 +1,6 @@
 from langgraph.graph import StateGraph, START, END
 
-from di.dependencies import get_tidb_connection, get_shopping_table
+from di.dependencies import get_tidb_connection, get_preference_table
 from retriever.graph.nodes import (
     orchestrator,
     search_vector_db_node,
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     graph = build_graph()
 
     conn = get_tidb_connection()
-    table = get_shopping_table(tidb_client=conn)
+    table = get_preference_table(tidb_client=conn)
 
     result = graph.invoke(
         input={"queries": ["food related stuff"], "user_id": "3"},

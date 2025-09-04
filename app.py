@@ -10,7 +10,8 @@ from langgraph.types import Command
 from pytidb import Table
 from starlette.responses import StreamingResponse
 
-from di.dependencies import get_shopping_table, get_checkpoint_saver
+from di.dependencies import get_preference_table, get_checkpoint_saver, get_shopping_list_table
+from extractor.graph.builder import build_graph as build_extractor_graph
 from graph.builder import build_graph
 from graph.type import StreamMessage, Quiz
 from model.quiz_resume_request import QuizResumeRequest
@@ -25,7 +26,7 @@ def read_root():
 
 @app.post("/get_product_recommendation")
 async def get_product_recommendation(
-        table: Annotated[Table, Depends(get_shopping_table)],
+        table: Annotated[Table, Depends(get_preference_table)],
         checkpointer: Annotated[InMemorySaver, Depends(get_checkpoint_saver)],
         file: UploadFile = File(...),
         user_id: str = Form(...),
@@ -50,7 +51,7 @@ async def get_product_recommendation(
 
 @app.post("/quiz_resume")
 async def quiz_resume(
-        table: Annotated[Table, Depends(get_shopping_table)],
+        table: Annotated[Table, Depends(get_preference_table)],
         checkpointer: Annotated[InMemorySaver, Depends(get_checkpoint_saver)],
         body: QuizResumeRequest,
 ):
@@ -59,6 +60,30 @@ async def quiz_resume(
     result = await graph.ainvoke(
         Command(resume={"quiz_results": body.question_and_answers}),
         config=_get_config(table=table, thread_id=body.thread_id)
+    )
+
+    return result
+
+
+@app.post("/insert_data")
+async def insert_shopping_list_and_preferences(
+        preference_table: Annotated[Table, Depends(get_preference_table)],
+        shopping_list_table: Annotated[Table, Depends(get_shopping_list_table)],
+        user_id: str = Form(...),
+        user_text: str = Form(...),
+):
+    graph = build_extractor_graph()
+
+    config = {
+        "configurable": {
+            "preference_table": preference_table,
+            "shopping_list_table": shopping_list_table
+        }
+    }
+
+    result = await graph.ainvoke(
+        input={"user_id": user_id, "user_text": user_text},
+        config=config,
     )
 
     return result
