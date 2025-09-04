@@ -13,7 +13,8 @@ from starlette.responses import StreamingResponse
 from di.dependencies import get_preference_table, get_checkpoint_saver, get_shopping_list_table
 from extractor.graph.builder import build_graph as build_extractor_graph
 from graph.builder import build_graph
-from graph.type import StreamMessage, Quiz
+from graph.type import StreamMessage, Quiz, SuggestedProductList
+from model.api_response import ApiResponse
 from model.quiz_resume_request import QuizResumeRequest
 
 app = FastAPI()
@@ -49,7 +50,7 @@ async def get_product_recommendation(
     )
 
 
-@app.post("/quiz_resume")
+@app.post("/quiz_resume", response_model=ApiResponse[SuggestedProductList])
 async def quiz_resume(
         table: Annotated[Table, Depends(get_preference_table)],
         checkpointer: Annotated[InMemorySaver, Depends(get_checkpoint_saver)],
@@ -62,10 +63,13 @@ async def quiz_resume(
         config=_get_config(table=table, thread_id=body.thread_id)
     )
 
-    return result
+    return ApiResponse[SuggestedProductList](
+        success=True,
+        data=result["suggested_products"],
+    )
 
 
-@app.post("/insert_data")
+@app.post("/insert_data", response_model=ApiResponse)
 async def insert_shopping_list_and_preferences(
         preference_table: Annotated[Table, Depends(get_preference_table)],
         shopping_list_table: Annotated[Table, Depends(get_shopping_list_table)],
@@ -86,7 +90,9 @@ async def insert_shopping_list_and_preferences(
         config=config,
     )
 
-    return result
+    return ApiResponse(
+        success=True
+    )
 
 
 async def _workflow_stream_generator(
