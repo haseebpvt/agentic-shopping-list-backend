@@ -50,7 +50,7 @@ async def get_product_recommendation(
     )
 
 
-@app.post("/quiz_resume", response_model=ApiResponse)
+@app.post("/quiz_resume", response_model=ApiResponse[SuggestedProductList])
 async def quiz_resume(
         table: Annotated[Table, Depends(get_preference_table)],
         checkpointer: Annotated[InMemorySaver, Depends(get_checkpoint_saver)],
@@ -69,7 +69,7 @@ async def quiz_resume(
     )
 
 
-@app.post("/insert_data")
+@app.post("/insert_data", response_model=ApiResponse)
 async def insert_shopping_list_and_preferences(
         preference_table: Annotated[Table, Depends(get_preference_table)],
         shopping_list_table: Annotated[Table, Depends(get_shopping_list_table)],
@@ -90,7 +90,9 @@ async def insert_shopping_list_and_preferences(
         config=config,
     )
 
-    return result
+    return ApiResponse(
+        success=True
+    )
 
 
 async def _workflow_stream_generator(
