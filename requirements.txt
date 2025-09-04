@@ -30,14 +30,14 @@ langgraph==0.6.6
 langgraph-checkpoint==2.1.1
 langgraph-prebuilt==0.6.4
 langgraph-sdk==0.2.2
-langsmith==0.4.13
+langsmith==0.4.21
 MarkupSafe==3.0.2
 marshmallow==3.26.1
 multidict==6.6.4
 mypy==1.17.1
 mypy_extensions==1.1.0
 numpy==2.3.2
-openai==1.99.1
+openai==1.102.0
 orjson==3.11.1
 ormsgpack==1.10.0
 packaging==25.0
@@ -51,6 +51,7 @@ Pygments==2.19.2
 PyMySQL==1.1.2
 pytest==8.4.1
 python-dotenv==1.1.1
+python-multipart==0.0.20
 pytidb==0.0.13
 PyYAML==6.0.2
 regex==2025.7.34
