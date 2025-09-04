@@ -62,7 +62,7 @@ async def quiz_resume(
         config=_get_config(table=table, thread_id=body.thread_id)
     )
 
-    return result
+    return result["suggested_products"]
 
 
 @app.post("/insert_data")
