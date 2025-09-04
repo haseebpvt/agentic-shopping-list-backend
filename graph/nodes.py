@@ -1,3 +1,5 @@
+from typing import List
+
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 from langgraph.config import get_stream_writer
@@ -144,7 +146,9 @@ def product_suggestion_node(state: State):
 
     llm = get_llm()
 
-    data = _get_product_data(state.product_items) | _get_preferences_data(state.preference_vector_search_results)
+    data = (_get_product_data(state.product_items) |
+            _get_preferences_data(state.preference_vector_search_results) |
+            _get_quiz_preferences(state.quiz_preferences))
 
     prompt = get_prompt_template("choose_product", **data)
 
@@ -185,6 +189,13 @@ def _get_analysis_data(enough_preferences: EnoughPreferences):
     """Returns the reason for why or why not the preferences are enough"""
     return {
         "analysis": enough_preferences.reason
+    }
+
+
+def _get_quiz_preferences(preferences: List[str]):
+    """Returns the quiz preference list"""
+    return {
+        "quiz_preferences": preferences
     }
 
 

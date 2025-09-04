@@ -12,6 +12,14 @@ Below is a list of preferences which can or cannot have any relevance to the pro
 - {{ pref }}
 {% endfor %}
 
+{% if quiz_preferences %}
+### Additional preferences collected
+Since the user preferences seems to be not enough, I asked user a few questions to get the following answers:
+{% for item in quiz_preferences %}
+- {{ item }}
+{% endfor %}
+{% endif %}
+
 Now your job is to look at the products list and the preference list and if there is any preference(s) that matches the
 the products. List them along with the reasons for your decision.
 
