@@ -50,7 +50,7 @@ async def get_product_recommendation(
     )
 
 
-@app.post("/quiz_resume")
+@app.post("/quiz_resume", response_model=ApiResponse)
 async def quiz_resume(
         table: Annotated[Table, Depends(get_preference_table)],
         checkpointer: Annotated[InMemorySaver, Depends(get_checkpoint_saver)],
@@ -65,7 +65,7 @@ async def quiz_resume(
 
     return ApiResponse[SuggestedProductList](
         success=True,
-        data=SuggestedProductList(products=result["suggested_products"]),
+        data=result["suggested_products"],
     )
 
 
