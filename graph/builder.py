@@ -1,7 +1,7 @@
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import StateGraph, START, END
 
-from di.dependencies import get_tidb_connection, get_shopping_table
+from di.dependencies import get_tidb_connection, get_preference_table
 from graph.nodes import (
     describe_image_node,
     generate_prompts_node,
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     graph = build_graph()
 
     conn = get_tidb_connection()
-    table = get_shopping_table(tidb_client=conn)
+    table = get_preference_table(tidb_client=conn)
 
     stream = graph.stream(
         input={"image_base64": data, "user_id": "4"},
