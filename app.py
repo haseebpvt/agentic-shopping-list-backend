@@ -13,7 +13,8 @@ from starlette.responses import StreamingResponse
 from di.dependencies import get_preference_table, get_checkpoint_saver, get_shopping_list_table
 from extractor.graph.builder import build_graph as build_extractor_graph
 from graph.builder import build_graph
-from graph.type import StreamMessage, Quiz
+from graph.type import StreamMessage, Quiz, SuggestedProductList
+from model.api_response import ApiResponse
 from model.quiz_resume_request import QuizResumeRequest
 
 app = FastAPI()
@@ -62,7 +63,10 @@ async def quiz_resume(
         config=_get_config(table=table, thread_id=body.thread_id)
     )
 
-    return result["suggested_products"]
+    return ApiResponse[SuggestedProductList](
+        success=True,
+        data=SuggestedProductList(products=result["suggested_products"]),
+    )
 
 
 @app.post("/insert_data")
