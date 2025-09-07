@@ -101,7 +101,11 @@ async def get_shopping_list(
         user_id: str = Form(...),
 ):
     result = shopping_list_table.query(filters={"user_id": user_id}).to_pydantic()
-    return result
+
+    return ApiResponse(
+        success=True,
+        data=result
+    )
 
 
 async def _workflow_stream_generator(
