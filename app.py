@@ -1,6 +1,6 @@
 import base64
 import json
-from typing import Annotated
+from typing import Annotated, Optional
 from uuid import uuid4
 
 import uvicorn
@@ -112,14 +112,23 @@ async def get_shopping_list(
 async def get_preference_list(
         preference_table: Annotated[Table, Depends(get_preference_table)],
         user_id: str = Form(...),
+        semantic_search_text: str | None = Form(None),
 ):
-    result = preference_table.query(filters={"user_id": user_id}).to_list()
+    if semantic_search_text:
+        result = (
+            preference_table.search(semantic_search_text)
+            .filter({"user_id": user_id})
+            .limit(10)
+            .to_list()
+        )
+    else:
+        result = preference_table.query(filters={"user_id": user_id}).to_list()
 
-    filtered_result = list(map(lambda item: {k: v for k, v in item.items() if k != "text_vec"}, result))
+    final_result = list(map(lambda item: {k: v for k, v in item.items() if k != "text_vec"}, result))
 
     return ApiResponse(
         success=True,
-        data=filtered_result
+        data=final_result
     )
 
 
