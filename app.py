@@ -115,8 +115,7 @@ async def get_preference_list(
 ):
     result = preference_table.query(filters={"user_id": user_id}).to_list()
 
-    # Remove the vector field as this is not required for the frontend
-    filtered_result = list(map(lambda item: item.pop("text_vec"), result))
+    filtered_result = list(map(lambda item: {k: v for k, v in item.items() if k != "text_vec"}, result))
 
     return ApiResponse(
         success=True,
