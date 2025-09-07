@@ -95,6 +95,7 @@ async def insert_shopping_list_and_preferences(
     )
 
 
+# TODO: Update the endpoint
 @app.get("/get-shopping-list")
 async def get_shopping_list(
         shopping_list_table: Annotated[Table, Depends(get_shopping_list_table)],
