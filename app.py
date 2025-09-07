@@ -113,11 +113,14 @@ async def get_preference_list(
         preference_table: Annotated[Table, Depends(get_preference_table)],
         user_id: str = Form(...),
 ):
-    result = preference_table.query(filters={"user_id": user_id}).to_pydantic()
+    result = preference_table.query(filters={"user_id": user_id}).to_list()
+
+    # Remove the vector field as this is not required for the frontend
+    filtered_result = list(map(lambda item: item.pop("text_vec"), result))
 
     return ApiResponse(
         success=True,
-        data=result
+        data=filtered_result
     )
 
 
