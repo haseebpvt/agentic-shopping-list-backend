@@ -124,7 +124,9 @@ async def get_preference_list(
     else:
         result = preference_table.query(filters={"user_id": user_id}).to_list()
 
-    final_result = list(map(lambda item: {k: v for k, v in item.items() if k != "text_vec"}, result))
+    # These keys should be removed from the dictionary as they are not required in the final output
+    remove_keys_arr = ["text_vec", "_distance", "_score"]
+    final_result = list(map(lambda item: {k: v for k, v in item.items() if k not in remove_keys_arr}, result))
 
     return ApiResponse(
         success=True,
