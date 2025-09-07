@@ -95,6 +95,32 @@ async def insert_shopping_list_and_preferences(
     )
 
 
+@app.get("/get_shopping_list")
+async def get_shopping_list(
+        shopping_list_table: Annotated[Table, Depends(get_shopping_list_table)],
+        user_id: str = Form(...),
+):
+    result = shopping_list_table.query(filters={"user_id": user_id}).to_pydantic()
+
+    return ApiResponse(
+        success=True,
+        data=result
+    )
+
+
+@app.get("/get_preference_list")
+async def get_preference_list(
+        preference_table: Annotated[Table, Depends(get_preference_table)],
+        user_id: str = Form(...),
+):
+    result = preference_table.query(filters={"user_id": user_id}).to_pydantic()
+
+    return ApiResponse(
+        success=True,
+        data=result
+    )
+
+
 async def _workflow_stream_generator(
         table: Table,
         image_base64: str,
