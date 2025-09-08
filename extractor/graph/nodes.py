@@ -3,7 +3,7 @@ from pytidb import Table
 
 from db.model.preference_table import PreferenceTable
 from db.model.shopping_list_table import ShoppingListTable
-from extractor.graph.type import State, ShoppingAndPreferenceExtraction
+from extractor.graph.type import State, ShoppingAndPreferenceExtraction, IsDuplicatePrompt
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 
@@ -60,3 +60,15 @@ def save_shopping_list_node(state: State, config: RunnableConfig):
     result = table.bulk_insert(list(shopping_list_table_data))
 
     return {}
+
+
+def check_if_the_preference_already_exist(state: State):
+    llm = get_llm()
+
+    data = {"prompt": state.user_text, "result": state.preference.preference}
+    prompt = get_prompt_template("duplicate_preference_check", **data)
+
+    explanation = llm.invoke(prompt)
+    structured_output = llm.with_structured_output(IsDuplicatePrompt).invoke(explanation.content)
+
+    return {"is_duplicate_preference": structured_output.is_duplicate}

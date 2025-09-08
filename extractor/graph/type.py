@@ -21,9 +21,13 @@ class ShoppingAndPreferenceExtraction(BaseModel):
     shopping_list: ShoppingList
     preference: UserPreference
 
+class IsDuplicatePrompt(BaseModel):
+    is_duplicate: bool
+
 
 class State(BaseModel):
     user_id: str
     user_text: str = ""
     shopping_list: ShoppingList | None = None
     preference: UserPreference | None = None
+    is_duplicate_preference: bool = False
