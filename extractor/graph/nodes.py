@@ -72,3 +72,8 @@ def check_if_the_preference_already_exist(state: State):
     structured_output = llm.with_structured_output(IsDuplicatePrompt).invoke(explanation.content)
 
     return {"is_duplicate_preference": structured_output.is_duplicate}
+
+
+def preference_adding_route(state: State):
+    # If duplicate preference we don't have to add the preference to database
+    return not state.is_duplicate_preference
