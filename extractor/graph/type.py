@@ -1,6 +1,8 @@
-from typing import List
+import operator
+from typing import List, Optional
 
 from pydantic import BaseModel
+from sqlalchemy.sql.annotation import Annotated
 
 
 class ShoppingItem(BaseModel):
@@ -25,9 +27,16 @@ class IsDuplicatePrompt(BaseModel):
     is_duplicate: bool
 
 
+class PreferenceSearchWorkerState(BaseModel):
+    user_id: Optional[str] = None
+    preference: Optional[str] = None
+    vector_search_result: List[str] = []
+    is_duplicate: bool = False
+    filtered_preference: Annotated[List[str], operator.add]
+
 class State(BaseModel):
     user_id: str
     user_text: str = ""
     shopping_list: ShoppingList | None = None
     preference: UserPreference | None = None
-    is_duplicate_preference: bool = False
+    filtered_preference: Annotated[List[str], operator.add]

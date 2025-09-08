@@ -3,7 +3,7 @@ from pytidb import Table
 
 from db.model.preference_table import PreferenceTable
 from db.model.shopping_list_table import ShoppingListTable
-from extractor.graph.type import State, ShoppingAndPreferenceExtraction, IsDuplicatePrompt
+from extractor.graph.type import State, ShoppingAndPreferenceExtraction, IsDuplicatePrompt, PreferenceSearchWorkerState
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 
@@ -62,18 +62,29 @@ def save_shopping_list_node(state: State, config: RunnableConfig):
     return {}
 
 
-def check_if_the_preference_already_exist(state: State):
+def search_preference(state: PreferenceSearchWorkerState, config: RunnableConfig):
+    table: Table[PreferenceTable] = config.get("configurable", {}).get("preference_table")
+
+    result = (table.search(state.preference)
+              .filter({"user_id": state.user_id})
+              .limit(3)
+              .to_pydantic())
+
+    return {"vector_search_result": [item["text"] for item in result]}
+
+
+def check_if_the_preference_already_exist(state: PreferenceSearchWorkerState):
     llm = get_llm()
 
-    data = {"prompt": state.user_text, "result": state.preference.preference}
+    data = {"prompt": state.preference, "result": state.vector_search_result}
     prompt = get_prompt_template("duplicate_preference_check", **data)
 
     explanation = llm.invoke(prompt)
     structured_output = llm.with_structured_output(IsDuplicatePrompt).invoke(explanation.content)
 
-    return {"is_duplicate_preference": structured_output.is_duplicate}
+    return {"is_duplicate": structured_output.is_duplicate}
 
 
-def preference_adding_route(state: State):
+def preference_adding_route(state: PreferenceSearchWorkerState):
     # If duplicate preference we don't have to add the preference to database
-    return not state.is_duplicate_preference
+    return state.is_duplicate
