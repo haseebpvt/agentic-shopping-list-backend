@@ -1,13 +1,23 @@
 from langchain_core.runnables import RunnableConfig
 from langgraph.types import Send
 from pytidb import Table
+import time
 
+from db.model.category import CategoryTable
 from db.model.preference_table import PreferenceTable
 from db.model.shopping_list_table import ShoppingListTable
-from extractor.graph.type import State, ShoppingAndPreferenceExtraction, IsDuplicatePrompt, PreferenceSearchWorkerState
+from extractor.graph.type import State, ShoppingAndPreferenceExtraction, IsDuplicatePrompt, PreferenceSearchWorkerState, \
+    Category
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 
+def load_category_node(_: State, config: RunnableConfig):
+    table: Table[CategoryTable] = config.get("configurable", {}).get("category")
+    result = table.query().to_pydantic()
+
+    return {
+        "category_list": list(map(lambda item: Category(id=item.id, name=item.name), result))
+    }
 
 def extract_shopping_and_preference_node(state: State):
     llm = get_llm()
@@ -90,6 +100,9 @@ def save_shopping_list_node(state: State, config: RunnableConfig):
             user_id=state.user_id,
             item_name=item.item_name,
             quantity=item.quantity,
+            unit="",
+            timestamp=time.time(),
+            category=item.category_id,
             note=item.note,
         ),
         state.shopping_list.shopping_list,
