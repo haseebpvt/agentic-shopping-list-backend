@@ -1,6 +1,6 @@
 from langgraph.graph import StateGraph, START, END
 
-from di.dependencies import get_tidb_connection, get_preference_table
+from di.dependencies import get_tidb_connection, get_preference_table, get_category_table, get_shopping_list_table
 from extractor.graph.nodes import (
     extract_shopping_and_preference_node,
     save_preference_node,
@@ -66,10 +66,19 @@ if __name__ == '__main__':
 
     conn = get_tidb_connection()
     table = get_preference_table(tidb_client=conn)
+    shopping_list_table = get_shopping_list_table(tidb_client=conn)
+    category_table = get_category_table(tidb_client=conn)
 
+    # noinspection PyTypeChecker
     result = my_graph.invoke(
-        {"user_id": "8", "user_text": "I like watching football"},
-        config={"configurable": {"preference_table": table}}
+        {"user_id": "8", "user_text": "I want to buy a football because I and my son like to play football."},
+        config={
+            "configurable": {
+                "preference_table": table,
+                "category": category_table,
+                "shopping_list_table": shopping_list_table
+            }
+        }
     )
 
     print(result)
