@@ -111,3 +111,7 @@ def save_shopping_list_node(state: State, config: RunnableConfig):
     result = table.bulk_insert(list(shopping_list_table_data))
 
     return {}
+
+
+def finalize_node(state: State):
+    return {}

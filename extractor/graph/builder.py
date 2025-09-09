@@ -7,7 +7,10 @@ from extractor.graph.nodes import (
     search_preference_node,
     check_if_the_preference_already_exist,
     preference_adding_route,
-    insert_preference_worker_spawn, load_category_node,
+    insert_preference_worker_spawn,
+    load_category_node,
+    save_shopping_list_node,
+    finalize_node,
 )
 from extractor.graph.type import State, PreferenceSearchWorkerState
 
@@ -18,15 +21,20 @@ def build_graph():
     graph.add_node("load_category_node", load_category_node)
     graph.add_node("extract_shopping_and_preference_node", extract_shopping_and_preference_node)
     graph.add_node("preference_insertion", _build_preference_inserter_graph)
+    graph.add_node("shopping_list_insertion", save_shopping_list_node)
+    graph.add_node("finalize_node", finalize_node)
 
     graph.add_edge(START, "load_category_node")
     graph.add_edge("load_category_node", "extract_shopping_and_preference_node")
+    graph.add_edge("extract_shopping_and_preference_node", "shopping_list_insertion")
     graph.add_conditional_edges(
         "extract_shopping_and_preference_node",
         insert_preference_worker_spawn,
         ["preference_insertion"]
     )
-    graph.add_edge("preference_insertion", END)
+    graph.add_edge("preference_insertion", "finalize_node")
+    graph.add_edge("shopping_list_insertion", "finalize_node")
+    graph.add_edge("finalize_node", END)
 
     return graph.compile()
 
