@@ -42,6 +42,10 @@ def get_shopping_list_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_
     return tidb_client.create_table(schema=ShoppingListTable, if_exists="skip")
 
 
+def get_category_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]) -> Table:
+    return tidb_client.open_table("category")
+
+
 in_memory_saver = InMemorySaver()
 
 
