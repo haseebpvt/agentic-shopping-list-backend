@@ -110,7 +110,9 @@ def save_shopping_list_node(state: State, config: RunnableConfig):
 
     result = table.bulk_insert(list(shopping_list_table_data))
 
-    return {}
+    return {
+        "inserted_shopping_list": list(map(lambda item: item.item_name, result))
+    }
 
 
 def finalize_node(state: State):

@@ -48,3 +48,4 @@ class State(BaseModel):
     shopping_list: ShoppingList | None = None
     preference: UserPreference | None = None
     inserted_preferences: Annotated[List[str], operator.add] = []
+    inserted_shopping_list: List[str] = []
