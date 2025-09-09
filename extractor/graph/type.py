@@ -3,10 +3,17 @@ from typing import List, Optional, Annotated
 
 from pydantic import BaseModel
 
+class Category(BaseModel):
+    id: int
+    name: str
+
+    def __str__(self):
+        return f"{self.name}: {self.id}"
 
 class ShoppingItem(BaseModel):
     item_name: str
     quantity: str
+    category_id: str
     note: str
 
 
@@ -37,6 +44,7 @@ class PreferenceSearchWorkerState(BaseModel):
 class State(BaseModel):
     user_id: str
     user_text: str = ""
+    category_list: List[Category] = []
     shopping_list: ShoppingList | None = None
     preference: UserPreference | None = None
     inserted_preferences: Annotated[List[str], operator.add] = []

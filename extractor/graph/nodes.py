@@ -12,7 +12,10 @@ from prompt.prompt_loader import get_prompt_template
 def extract_shopping_and_preference_node(state: State):
     llm = get_llm()
 
-    data = {"user_text": state.user_text}
+    data = {
+        "user_text": state.user_text,
+        "categories": list(map(lambda category: str(category), state.category_list))
+    }
     prompt = get_prompt_template("extract_shopping_items_and_preferences", **data)
 
     explanation = llm.invoke(input=prompt)
