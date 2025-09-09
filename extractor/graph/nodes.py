@@ -20,6 +20,34 @@ def extract_shopping_and_preference_node(state: State):
     return {"shopping_list": structured_putput.shopping_list, "preference": structured_putput.preference}
 
 
+def search_preference_node(state: PreferenceSearchWorkerState, config: RunnableConfig):
+    table: Table[PreferenceTable] = config.get("configurable", {}).get("preference_table")
+
+    result = (table.search(state.preference)
+              .filter({"user_id": state.user_id})
+              .limit(3)
+              .to_pydantic())
+
+    return {"vector_search_result": [item["text"] for item in result]}
+
+
+def check_if_the_preference_already_exist(state: PreferenceSearchWorkerState):
+    llm = get_llm()
+
+    data = {"prompt": state.preference, "result": state.vector_search_result}
+    prompt = get_prompt_template("duplicate_preference_check", **data)
+
+    explanation = llm.invoke(prompt)
+    structured_output = llm.with_structured_output(IsDuplicatePrompt).invoke(explanation.content)
+
+    return {"is_duplicate": structured_output.is_duplicate}
+
+
+def preference_adding_route(state: PreferenceSearchWorkerState):
+    # If duplicate preference we don't have to add the preference to database
+    return state.is_duplicate
+
+
 def save_preference_node(state: State, config: RunnableConfig):
     # If there is no data, don't continue
     if not state.preference.preference:
@@ -60,31 +88,3 @@ def save_shopping_list_node(state: State, config: RunnableConfig):
     result = table.bulk_insert(list(shopping_list_table_data))
 
     return {}
-
-
-def search_preference(state: PreferenceSearchWorkerState, config: RunnableConfig):
-    table: Table[PreferenceTable] = config.get("configurable", {}).get("preference_table")
-
-    result = (table.search(state.preference)
-              .filter({"user_id": state.user_id})
-              .limit(3)
-              .to_pydantic())
-
-    return {"vector_search_result": [item["text"] for item in result]}
-
-
-def check_if_the_preference_already_exist(state: PreferenceSearchWorkerState):
-    llm = get_llm()
-
-    data = {"prompt": state.preference, "result": state.vector_search_result}
-    prompt = get_prompt_template("duplicate_preference_check", **data)
-
-    explanation = llm.invoke(prompt)
-    structured_output = llm.with_structured_output(IsDuplicatePrompt).invoke(explanation.content)
-
-    return {"is_duplicate": structured_output.is_duplicate}
-
-
-def preference_adding_route(state: PreferenceSearchWorkerState):
-    # If duplicate preference we don't have to add the preference to database
-    return state.is_duplicate
