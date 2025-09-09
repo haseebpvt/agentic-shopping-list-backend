@@ -13,7 +13,7 @@ class Category(BaseModel):
 class ShoppingItem(BaseModel):
     item_name: str
     quantity: str
-    category_id: str
+    category_id: int
     note: str
 
 
