@@ -1,7 +1,8 @@
+import time
+
 from langchain_core.runnables import RunnableConfig
 from langgraph.types import Send
 from pytidb import Table
-import time
 
 from db.model.category import CategoryTable
 from db.model.preference_table import PreferenceTable
@@ -11,13 +12,15 @@ from extractor.graph.type import State, ShoppingAndPreferenceExtraction, IsDupli
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 
+
 def load_category_node(_: State, config: RunnableConfig):
     table: Table[CategoryTable] = config.get("configurable", {}).get("category")
     result = table.query().to_pydantic()
 
     return {
-        "category_list": list(map(lambda item: Category(id=item.id, name=item.name), result))
+        "category_list": list(map(lambda item: Category(id=int(item.id), name=item.name), result))
     }
+
 
 def extract_shopping_and_preference_node(state: State):
     llm = get_llm()
@@ -95,20 +98,22 @@ def save_shopping_list_node(state: State, config: RunnableConfig):
 
     table: Table = config.get("configurable", {}).get("shopping_list_table")
 
-    shopping_list_table_data = map(
-        lambda item: ShoppingListTable(
-            user_id=state.user_id,
-            item_name=item.item_name,
-            quantity=item.quantity,
-            unit="",
-            timestamp=time.time(),
-            category=item.category_id,
-            note=item.note,
-        ),
-        state.shopping_list.shopping_list,
+    shopping_list_table_data = list(
+        map(
+            lambda item: ShoppingListTable(
+                user_id=state.user_id,
+                item_name=item.item_name,
+                quantity=item.quantity,
+                unit="",
+                timestamp=time.time(),
+                category_id=item.category_id,
+                note=item.note,
+            ),
+            state.shopping_list.shopping_list,
+        )
     )
 
-    result = table.bulk_insert(list(shopping_list_table_data))
+    result = table.bulk_insert(shopping_list_table_data)
 
     return {
         "inserted_shopping_list": list(map(lambda item: item.item_name, result))
