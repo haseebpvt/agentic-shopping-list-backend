@@ -29,14 +29,11 @@ class IsDuplicatePrompt(BaseModel):
 
 class PreferenceSearchWorkerState(BaseModel):
     user_id: Optional[str] = None
-    preference: Optional[str] = None
-    vector_search_result: List[str] = []
-    is_duplicate: bool = False
-    filtered_preference: Annotated[List[str], operator.add]
+    preference: str
+
 
 class State(BaseModel):
     user_id: str
     user_text: str = ""
     shopping_list: ShoppingList | None = None
     preference: UserPreference | None = None
-    filtered_preference: Annotated[List[str], operator.add]

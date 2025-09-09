@@ -1,4 +1,5 @@
 from langchain_core.runnables import RunnableConfig
+from langgraph.types import Send
 from pytidb import Table
 
 from db.model.preference_table import PreferenceTable
@@ -46,6 +47,14 @@ def check_if_the_preference_already_exist(state: PreferenceSearchWorkerState):
 def preference_adding_route(state: PreferenceSearchWorkerState):
     # If duplicate preference we don't have to add the preference to database
     return state.is_duplicate
+
+
+def insert_preference_worker_spawn(state: State):
+    return [
+        Send(
+            "preference_insertion",
+            {"user_id": state.user_id, "preference": preference}
+        ) for preference in state.preference.preference]
 
 
 def save_preference_node(state: State, config: RunnableConfig):
