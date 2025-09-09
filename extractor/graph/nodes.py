@@ -35,7 +35,7 @@ def search_preference_node(state: PreferenceSearchWorkerState, config: RunnableC
 def check_if_the_preference_already_exist(state: PreferenceSearchWorkerState):
     llm = get_llm()
 
-    data = {"prompt": state.preference, "result": state.vector_search_result}
+    data = {"query": state.preference, "result": state.vector_search_result}
     prompt = get_prompt_template("duplicate_preference_check", **data)
 
     explanation = llm.invoke(prompt)

@@ -6,7 +6,7 @@ respond with a small explanation and at the end of your response specifically me
 
 ## Vector Search Results
 {% for item in result %}
-- item
+- {{ item }}
 {% endfor %}
 
 ## Example output
