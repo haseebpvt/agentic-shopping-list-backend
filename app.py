@@ -1,6 +1,6 @@
 import base64
 import json
-from typing import Annotated, Optional
+from typing import Annotated
 from uuid import uuid4
 
 import uvicorn
@@ -8,8 +8,11 @@ from fastapi import FastAPI, UploadFile, File, Form, Depends
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.types import Command
 from pytidb import Table
+from pytidb.sql import select
 from starlette.responses import StreamingResponse
 
+from db.model.category import CategoryTable
+from db.model.shopping_list_table import ShoppingListTable
 from di.dependencies import get_preference_table, get_checkpoint_saver, get_shopping_list_table
 from extractor.graph.builder import build_graph as build_extractor_graph
 from graph.builder import build_graph
@@ -97,10 +100,15 @@ async def insert_shopping_list_and_preferences(
 
 @app.get("/get_shopping_list")
 async def get_shopping_list(
-        shopping_list_table: Annotated[Table, Depends(get_shopping_list_table)],
         user_id: str = Form(...),
 ):
-    result = shopping_list_table.query(filters={"user_id": user_id}).to_pydantic()
+    query = (
+        select(ShoppingListTable)
+        .join(CategoryTable, CategoryTable.id == ShoppingListTable.category_id)
+        .where(ShoppingListTable.user_id == user_id)
+    )
+
+
 
     return ApiResponse(
         success=True,
