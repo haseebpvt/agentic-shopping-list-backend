@@ -1,5 +1,6 @@
 from langgraph.graph import StateGraph, START, END
 
+from di.dependencies import get_tidb_connection, get_preference_table
 from extractor.graph.nodes import (
     extract_shopping_and_preference_node,
     save_preference_node,
@@ -28,7 +29,7 @@ def build_graph():
     return graph.compile()
 
 
-def _build_preference_inserter_graph():
+def _build_preference_inserter_graph(state):
     sub_graph = StateGraph(PreferenceSearchWorkerState)
 
     sub_graph.add_node("search_preference_node", search_preference_node)
@@ -48,3 +49,17 @@ def _build_preference_inserter_graph():
     sub_graph.add_edge("save_preference_node", END)
 
     return sub_graph.compile()
+
+
+if __name__ == '__main__':
+    my_graph = build_graph()
+
+    conn = get_tidb_connection()
+    table = get_preference_table(tidb_client=conn)
+
+    result = my_graph.invoke(
+        {"user_id": "8", "user_text": "I have a child"},
+        config={"configurable": {"preference_table": table}}
+    )
+
+    print(result)

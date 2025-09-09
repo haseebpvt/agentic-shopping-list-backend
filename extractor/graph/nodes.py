@@ -29,7 +29,7 @@ def search_preference_node(state: PreferenceSearchWorkerState, config: RunnableC
               .limit(3)
               .to_pydantic())
 
-    return {"vector_search_result": [item["text"] for item in result]}
+    return {"vector_search_result": [item.text for item in result]}
 
 
 def check_if_the_preference_already_exist(state: PreferenceSearchWorkerState):
@@ -54,12 +54,13 @@ def insert_preference_worker_spawn(state: State):
         Send(
             "preference_insertion",
             {"user_id": state.user_id, "preference": preference}
-        ) for preference in state.preference.preference]
+        ) for preference in state.preference.preference
+    ]
 
 
-def save_preference_node(state: State, config: RunnableConfig):
+def save_preference_node(state: PreferenceSearchWorkerState, config: RunnableConfig):
     # If there is no data, don't continue
-    if not state.preference.preference:
+    if not state.preference:
         return
 
     table: Table = config.get("configurable", {}).get("preference_table")
@@ -69,7 +70,7 @@ def save_preference_node(state: State, config: RunnableConfig):
             user_id=state.user_id,
             text=text,
         ),
-        state.preference.preference,
+        state.preference,
     )
 
     result = table.bulk_insert(list(preferences_table_data))

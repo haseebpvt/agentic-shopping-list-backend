@@ -29,7 +29,9 @@ class IsDuplicatePrompt(BaseModel):
 
 class PreferenceSearchWorkerState(BaseModel):
     user_id: Optional[str] = None
-    preference: str
+    preference: Optional[str] = None
+    vector_search_result: List[str] = []
+    is_duplicate: bool = False
 
 
 class State(BaseModel):
