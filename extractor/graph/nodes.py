@@ -61,19 +61,16 @@ def insert_preference_worker_spawn(state: State):
 def save_preference_node(state: PreferenceSearchWorkerState, config: RunnableConfig):
     # If there is no data, don't continue
     if not state.preference:
-        return
+        return {}
 
     table: Table = config.get("configurable", {}).get("preference_table")
 
-    preferences_table_data = map(
-        lambda text: PreferenceTable(
-            user_id=state.user_id,
-            text=text,
-        ),
-        state.preference,
+    preferences_table_data = PreferenceTable(
+        user_id=state.user_id,
+        text=state.preference,
     )
 
-    result = table.bulk_insert(list(preferences_table_data))
+    result = table.bulk_insert([preferences_table_data])
 
     return {}
 
@@ -81,7 +78,7 @@ def save_preference_node(state: PreferenceSearchWorkerState, config: RunnableCon
 def save_shopping_list_node(state: State, config: RunnableConfig):
     # If there is no data, don't continue
     if not state.shopping_list.shopping_list:
-        return
+        return {}
 
     table: Table = config.get("configurable", {}).get("shopping_list_table")
 
