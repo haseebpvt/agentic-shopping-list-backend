@@ -29,15 +29,15 @@ def build_graph():
 
 
 def _build_preference_inserter_graph():
-    graph = StateGraph(PreferenceSearchWorkerState)
+    sub_graph = StateGraph(PreferenceSearchWorkerState)
 
-    graph.add_node("search_preference_node", search_preference_node)
-    graph.add_node("check_if_the_preference_already_exist", check_if_the_preference_already_exist)
-    graph.add_node("save_preference_node", save_preference_node)
+    sub_graph.add_node("search_preference_node", search_preference_node)
+    sub_graph.add_node("check_if_the_preference_already_exist", check_if_the_preference_already_exist)
+    sub_graph.add_node("save_preference_node", save_preference_node)
 
-    graph.add_edge(START, "search_preference_node")
-    graph.add_edge("search_preference_node", "check_if_the_preference_already_exist")
-    graph.add_conditional_edges(
+    sub_graph.add_edge(START, "search_preference_node")
+    sub_graph.add_edge("search_preference_node", "check_if_the_preference_already_exist")
+    sub_graph.add_conditional_edges(
         "check_if_the_preference_already_exist",
         preference_adding_route,
         {
@@ -45,4 +45,6 @@ def _build_preference_inserter_graph():
             False: "save_preference_node"
         },
     )
-    graph.add_edge("save_preference_node", END)
+    sub_graph.add_edge("save_preference_node", END)
+
+    return sub_graph.compile()
