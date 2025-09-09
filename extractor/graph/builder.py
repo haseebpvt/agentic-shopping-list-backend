@@ -58,7 +58,7 @@ if __name__ == '__main__':
     table = get_preference_table(tidb_client=conn)
 
     result = my_graph.invoke(
-        {"user_id": "8", "user_text": "I have a child"},
+        {"user_id": "8", "user_text": "I like watching football"},
         config={"configurable": {"preference_table": table}}
     )
 

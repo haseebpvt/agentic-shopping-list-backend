@@ -72,7 +72,7 @@ def save_preference_node(state: PreferenceSearchWorkerState, config: RunnableCon
 
     result = table.bulk_insert([preferences_table_data])
 
-    return {}
+    return {"inserted_preferences": [item.text for item in result]}
 
 
 def save_shopping_list_node(state: State, config: RunnableConfig):

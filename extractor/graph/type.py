@@ -1,8 +1,7 @@
 import operator
-from typing import List, Optional
+from typing import List, Optional, Annotated
 
 from pydantic import BaseModel
-from sqlalchemy.sql.annotation import Annotated
 
 
 class ShoppingItem(BaseModel):
@@ -32,6 +31,7 @@ class PreferenceSearchWorkerState(BaseModel):
     preference: Optional[str] = None
     vector_search_result: List[str] = []
     is_duplicate: bool = False
+    inserted_preferences: Annotated[List[str], operator.add] = []
 
 
 class State(BaseModel):
@@ -39,3 +39,4 @@ class State(BaseModel):
     user_text: str = ""
     shopping_list: ShoppingList | None = None
     preference: UserPreference | None = None
+    inserted_preferences: Annotated[List[str], operator.add] = []
