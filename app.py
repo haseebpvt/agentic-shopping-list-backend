@@ -1,6 +1,6 @@
 import base64
 import json
-from typing import Annotated, Optional
+from typing import Annotated, Sequence
 from uuid import uuid4
 
 import uvicorn
@@ -10,7 +10,10 @@ from langgraph.types import Command
 from pytidb import Table
 from starlette.responses import StreamingResponse
 
-from di.dependencies import get_preference_table, get_checkpoint_saver, get_shopping_list_table
+from db.database_service import DatabaseService
+from db.model.category import CategoryTable
+from db.model.shopping_list_table import ShoppingListTable
+from di.dependencies import get_preference_table, get_checkpoint_saver, get_shopping_list_table, get_database_service
 from extractor.graph.builder import build_graph as build_extractor_graph
 from graph.builder import build_graph
 from graph.type import StreamMessage, Quiz, SuggestedProductList
@@ -97,15 +100,25 @@ async def insert_shopping_list_and_preferences(
 
 @app.get("/get_shopping_list")
 async def get_shopping_list(
-        shopping_list_table: Annotated[Table, Depends(get_shopping_list_table)],
+        database_service: Annotated[DatabaseService, Depends(get_database_service)],
         user_id: str = Form(...),
 ):
-    result = shopping_list_table.query(filters={"user_id": user_id}).to_pydantic()
+    result = database_service.get_shopping_list(user_id=user_id)
+
+    final_data = list(map(lambda item: _process_result(item), result))
 
     return ApiResponse(
         success=True,
-        data=result
+        data=final_data
     )
+
+
+def _process_result(data):
+    shopping_list, category = data
+    shopping_list_json = json.loads(shopping_list.model_dump_json())
+    category_json = {"category_name": category.name}
+
+    return shopping_list_json | category_json
 
 
 @app.get("/get_preference_list")
