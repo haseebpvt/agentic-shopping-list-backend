@@ -17,7 +17,7 @@ async def get_shopping_list(
 ):
     result = database_service.get_shopping_list(user_id=user_id)
 
-    final_data = list(map(lambda item: _process_result(item), result))
+    final_data = list(map(lambda item: _process_shopping_list_result(item), result))
 
     return ApiResponse(
         success=True,
@@ -25,7 +25,7 @@ async def get_shopping_list(
     )
 
 
-def _process_result(data):
+def _process_shopping_list_result(data):
     shopping_list, category = data
     shopping_list_json = json.loads(shopping_list.model_dump_json())
     category_json = {"category_name": category.name}
