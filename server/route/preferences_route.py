@@ -3,7 +3,8 @@ from typing import Annotated
 from fastapi import Form, Depends, APIRouter
 from pytidb import Table
 
-from di.dependencies import get_preference_table
+from db.database_service import DatabaseService
+from di.dependencies import get_preference_table, get_database_service
 from server.model.api_response import ApiResponse
 
 router = APIRouter()
@@ -32,4 +33,29 @@ async def get_preference_list(
     return ApiResponse(
         success=True,
         data=final_result
+    )
+
+
+@router.post("/update")
+async def update_preference(
+        database_service: Annotated[DatabaseService, Depends(get_database_service)],
+        item_id: int = Form(...),
+        text: str = Form(...),
+):
+    database_service.update_preference(item_id=item_id, text=text)
+
+    return ApiResponse(
+        success=True,
+    )
+
+
+@router.delete("/delete")
+async def delete_preference(
+        database_service: Annotated[DatabaseService, Depends(get_database_service)],
+        item_id: int = Form(...),
+):
+    database_service.delete_preference(item_id=item_id)
+
+    return ApiResponse(
+        success=True,
     )
