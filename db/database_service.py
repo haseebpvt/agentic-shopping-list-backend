@@ -31,4 +31,5 @@ class DatabaseService:
         )
 
         with Session(self.client.db_engine) as session:
-            result = session.exec(query)
+            session.exec(query)
+            session.commit()
