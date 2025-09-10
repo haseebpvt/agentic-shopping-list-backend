@@ -14,3 +14,4 @@ class ShoppingListTable(TableModel):
     timestamp: int = Field()
     category_id: int = Field()
     note: str = FullTextField()
+    is_purchased: bool = Field(default=False)
