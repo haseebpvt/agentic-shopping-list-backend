@@ -1,6 +1,6 @@
 from pytidb import Session
 from pytidb import TiDBClient
-from pytidb.sql import select, update
+from pytidb.sql import select, update, delete
 
 from db.model.category import CategoryTable
 from db.model.preference_table import PreferenceTable
@@ -38,6 +38,14 @@ class DatabaseService:
             update(PreferenceTable)
             .where(PreferenceTable.id == item_id)
             .values(text=text)
+        )
+
+        self._exec_query(query)
+
+    def delete_preference(self, item_id: int):
+        query = (
+            delete(PreferenceTable)
+            .where(PreferenceTable.id == item_id)
         )
 
         self._exec_query(query)

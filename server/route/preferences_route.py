@@ -47,3 +47,15 @@ async def update_preference(
     return ApiResponse(
         success=True,
     )
+
+
+@router.delete("/delete")
+async def delete_preference(
+        database_service: Annotated[DatabaseService, Depends(get_database_service)],
+        item_id: int = Form(...),
+):
+    database_service.delete_preference(item_id=item_id)
+
+    return ApiResponse(
+        success=True,
+    )
