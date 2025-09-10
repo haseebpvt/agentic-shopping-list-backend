@@ -10,10 +10,12 @@ from di.dependencies import get_preference_table, get_shopping_list_table, get_d
 from extractor.graph.builder import build_graph as build_extractor_graph
 from server.model.api_response import ApiResponse
 from server.route.product_recommendation_route import router as product_recommendation_route
+from server.route.preferences_route import router as preference_route
 
 app = FastAPI()
 
 app.include_router(product_recommendation_route, prefix="/recommend", tags=["Recommend"])
+app.include_router(preference_route, prefix="/preference", tags=["Preference"])
 
 
 @app.get("/")
@@ -68,32 +70,6 @@ def _process_result(data):
     category_json = {"category_name": category.name}
 
     return shopping_list_json | category_json
-
-
-@app.get("/get_preference_list")
-async def get_preference_list(
-        preference_table: Annotated[Table, Depends(get_preference_table)],
-        user_id: str = Form(...),
-        semantic_search_text: str | None = Form(None),
-):
-    if semantic_search_text:
-        result = (
-            preference_table.search(semantic_search_text)
-            .filter({"user_id": user_id})
-            .limit(10)
-            .to_list()
-        )
-    else:
-        result = preference_table.query(filters={"user_id": user_id}).to_list()
-
-    # These keys should be removed from the dictionary as they are not required in the final output
-    remove_keys_arr = ["text_vec", "_distance", "_score"]
-    final_result = list(map(lambda item: {k: v for k, v in item.items() if k not in remove_keys_arr}, result))
-
-    return ApiResponse(
-        success=True,
-        data=final_result
-    )
 
 
 if __name__ == "__main__":
