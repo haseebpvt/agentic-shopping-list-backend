@@ -10,4 +10,8 @@ class ShoppingListTable(TableModel):
     user_id: int = Field()
     item_name: str = FullTextField()
     quantity: str = FullTextField()
+    unit: str = FullTextField()
+    timestamp: int = Field()
+    category_id: int = Field()
     note: str = FullTextField()
+    is_purchased: bool = Field(default=False)

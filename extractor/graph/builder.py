@@ -1,6 +1,6 @@
 from langgraph.graph import StateGraph, START, END
 
-from di.dependencies import get_tidb_connection, get_preference_table
+from di.dependencies import get_tidb_connection, get_preference_table, get_category_table, get_shopping_list_table
 from extractor.graph.nodes import (
     extract_shopping_and_preference_node,
     save_preference_node,
@@ -8,6 +8,9 @@ from extractor.graph.nodes import (
     check_if_the_preference_already_exist,
     preference_adding_route,
     insert_preference_worker_spawn,
+    load_category_node,
+    save_shopping_list_node,
+    finalize_node,
 )
 from extractor.graph.type import State, PreferenceSearchWorkerState
 
@@ -15,16 +18,23 @@ from extractor.graph.type import State, PreferenceSearchWorkerState
 def build_graph():
     graph = StateGraph(State)
 
+    graph.add_node("load_category_node", load_category_node)
     graph.add_node("extract_shopping_and_preference_node", extract_shopping_and_preference_node)
     graph.add_node("preference_insertion", _build_preference_inserter_graph)
+    graph.add_node("shopping_list_insertion", save_shopping_list_node)
+    graph.add_node("finalize_node", finalize_node)
 
-    graph.add_edge(START, "extract_shopping_and_preference_node")
+    graph.add_edge(START, "load_category_node")
+    graph.add_edge("load_category_node", "extract_shopping_and_preference_node")
+    graph.add_edge("extract_shopping_and_preference_node", "shopping_list_insertion")
     graph.add_conditional_edges(
         "extract_shopping_and_preference_node",
         insert_preference_worker_spawn,
         ["preference_insertion"]
     )
-    graph.add_edge("preference_insertion", END)
+    graph.add_edge("preference_insertion", "finalize_node")
+    graph.add_edge("shopping_list_insertion", "finalize_node")
+    graph.add_edge("finalize_node", END)
 
     return graph.compile()
 
@@ -56,10 +66,19 @@ if __name__ == '__main__':
 
     conn = get_tidb_connection()
     table = get_preference_table(tidb_client=conn)
+    shopping_list_table = get_shopping_list_table(tidb_client=conn)
+    category_table = get_category_table(tidb_client=conn)
 
+    # noinspection PyTypeChecker
     result = my_graph.invoke(
-        {"user_id": "8", "user_text": "I like watching football"},
-        config={"configurable": {"preference_table": table}}
+        {"user_id": "8", "user_text": "I want to buy a football because I and my son like to play football."},
+        config={
+            "configurable": {
+                "preference_table": table,
+                "category": category_table,
+                "shopping_list_table": shopping_list_table
+            }
+        }
     )
 
     print(result)

@@ -6,6 +6,7 @@ from fastapi import Depends
 from langgraph.checkpoint.memory import InMemorySaver
 from pytidb import TiDBClient, Table
 
+from db.database_service import DatabaseService
 from db.model.preference_table import PreferenceTable
 from db.model.shopping_list_table import ShoppingListTable
 
@@ -40,6 +41,14 @@ def get_preference_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_con
 
 def get_shopping_list_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]) -> Table:
     return tidb_client.create_table(schema=ShoppingListTable, if_exists="skip")
+
+
+def get_category_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]) -> Table:
+    return tidb_client.open_table("category")
+
+
+def get_database_service(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]):
+    return DatabaseService(client=tidb_client)
 
 
 in_memory_saver = InMemorySaver()

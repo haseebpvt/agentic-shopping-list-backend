@@ -11,14 +11,15 @@ Your task is to analyze the text and produce **two outputs**:
 
 * Extract all items the user intends to buy.
 * Include details such as **quantity, brand, or notes** if mentioned.
+* For each product, also include the **Category ID** by matching it to the most appropriate category from the provided Category List.
 
 **Example:**
 User text: *“I need to get 2 packs of Dove soap and maybe some fresh apples.”*
 
 * Shopping List:
 
-  * Dove soap (2 packs)
-  * Fresh apples
+  * Dove soap (2 packs) — Category ID: 5
+  * Fresh apples — Category ID: 2
 
 ---
 
@@ -45,5 +46,11 @@ User text: *“I want to increase my protein intake, and I don’t like the smel
 The goal is to build a useful record of both **shopping needs** and **personal context** so future product suggestions can be more **relevant and personalized**.
 
 ---
+
+## Category List For Reference
+{% for category in categories %}
+- {{category}}
+{% endfor %}
+
 ## User text
 {{ user_text }}
