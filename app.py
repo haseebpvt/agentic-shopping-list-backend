@@ -6,7 +6,7 @@ from server.route.product_recommendation_route import router as product_recommen
 from server.route.shopping_list_route import router as shopping_list_route
 from server.route.extractor_route import router as extractor_route
 
-app = FastAPI()
+app = FastAPI(root_path="/api")
 
 app.include_router(product_recommendation_route, prefix="/recommend", tags=["Recommend"])
 app.include_router(preference_route, prefix="/preference", tags=["Preference"])
