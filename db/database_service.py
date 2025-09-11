@@ -29,21 +29,20 @@ class DatabaseService:
 
         return result
 
-    def does_product_duplicate_exists(self, user_id: str, product_name: str):
+    def does_product_names_duplicate_exists(self, user_id: str, product_names: List[str]):
         """Checks if unpurchased product with same name exist already"""
-        query = (
-            select(ShoppingListTable)
-            .where(
-                ShoppingListTable.user_id == user_id,
-                ShoppingListTable.item_name == product_name,
-                ShoppingListTable.is_purchased == 0,
-            )
-        )
 
-        with Session(self.client.db_engine) as session:
-            result = session.exec(query).all()
+        result = self.shopping_list_table.query(
+            filters={
+                "user_id": {"$eq": user_id},
+                "is_purchased": {"$eq": 0},
+                "item_name": {"$in": product_names}
+            }
+        ).to_list()
 
-        return len(result) > 0
+        filter_list = list(set(map(lambda item: item["item_name"], result)))
+
+        return filter_list
 
     def save_to_shopping_list(
             self,
