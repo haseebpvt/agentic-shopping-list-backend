@@ -30,13 +30,13 @@ def extract_shopping_and_preference_node(state: State):
     prompt = get_prompt_template("extract_shopping_items_and_preferences", **data)
 
     explanation = llm.invoke(input=prompt)
-    structured_putput = llm.with_structured_output(ShoppingAndPreferenceExtraction).invoke(explanation.content)
+    structured_output = llm.with_structured_output(ShoppingAndPreferenceExtraction).invoke(explanation.content)
 
     # If the configuration passed specify only preference list is required to be extracted
     # we can simply use an empty array in place of shopping list items.
-    shopping_list = structured_putput.shopping_list if not state.extract_only_preferences else []
+    shopping_list = structured_output.shopping_list if not state.extract_only_preferences else []
 
-    return {"shopping_list": shopping_list, "preference": structured_putput.preference}
+    return {"shopping_list": shopping_list, "preference": structured_output.preference}
 
 
 def search_preference_node(state: PreferenceSearchWorkerState, config: RunnableConfig):
