@@ -149,6 +149,8 @@ def save_user_preferences_node(state: State, config: RunnableConfig):
     # Generate the summary of quiz preferences provided by the user
     llm_response = llm.invoke(prompt)
 
+    # Use the extractor workflow to insert the preference
+    # The extractor workflow take care of the duplicate preferences if any
     graph = build_extractor_graph()
     graph.invoke(
         {
