@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import Form, Depends, APIRouter
+from langgraph.errors import InvalidUpdateError
 from pytidb import Table
 
 from di.dependencies import get_preference_table, get_shopping_list_table, get_category_table
@@ -28,14 +29,13 @@ async def insert_shopping_list_and_preferences(
         }
     }
 
-    # noinspection PyBroadException
     try:
         # TODO: Find out why fanout cause issue with state variable
         await graph.ainvoke(
             input={"user_id": user_id, "user_text": user_text},
             config=config,
         )
-    except Exception as e:
+    except InvalidUpdateError as e:
         print(e)
 
     return ApiResponse(
