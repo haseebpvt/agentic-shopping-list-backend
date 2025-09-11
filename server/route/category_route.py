@@ -7,6 +7,7 @@ from di.dependencies import get_database_service
 
 router = APIRouter()
 
+
 @router.get("/categories")
 async def get_categories(
         database_service: Annotated[DatabaseService, Depends(get_database_service)]
