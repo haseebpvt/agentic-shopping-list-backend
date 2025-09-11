@@ -71,12 +71,12 @@ if __name__ == '__main__':
 
     # noinspection PyTypeChecker
     result = my_graph.invoke(
-        {"user_id": "8", "user_text": "I want to buy a football because I and my son like to play football."},
+        {"user_id": "8", "user_text": "I want to buy a football because I and my son like to play football.", "extract_only_preferences": True},
         config={
             "configurable": {
                 "preference_table": table,
                 "category": category_table,
-                "shopping_list_table": shopping_list_table
+                "shopping_list_table": shopping_list_table,
             }
         }
     )
