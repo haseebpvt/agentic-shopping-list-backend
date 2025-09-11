@@ -1,12 +1,10 @@
-import time
-
 from langchain_core.runnables import RunnableConfig
 from langgraph.types import Send
 from pytidb import Table
 
+from db.database_service import DatabaseService
 from db.model.category import CategoryTable
 from db.model.preference_table import PreferenceTable
-from db.model.shopping_list_table import ShoppingListTable
 from extractor.graph.type import State, ShoppingAndPreferenceExtraction, IsDuplicatePrompt, PreferenceSearchWorkerState, \
     Category
 from llm.llm import get_llm
@@ -96,24 +94,24 @@ def save_shopping_list_node(state: State, config: RunnableConfig):
     if not state.shopping_list.shopping_list:
         return {}
 
-    table: Table = config.get("configurable", {}).get("shopping_list_table")
+    database_service: DatabaseService = config.get("configurable", {}).get("database_service")
 
-    shopping_list_table_data = list(
-        map(
-            lambda item: ShoppingListTable(
-                user_id=state.user_id,
-                item_name=item.item_name,
-                quantity=item.quantity,
-                unit="",
-                timestamp=time.time(),
-                category_id=item.category_id,
-                note=item.note,
-            ),
-            state.shopping_list.shopping_list,
-        )
+    # Get the list of existing unpurchased items list
+    existing_item_list = database_service.does_product_names_duplicate_exists(
+        user_id=state.user_id,
+        product_names=list(map(lambda item: item.item_name.lower(), state.shopping_list.shopping_list))
     )
 
-    result = table.bulk_insert(shopping_list_table_data)
+    # We don't want to add the items to shopping list if the exact items is already in
+    # So create a list which doesn't include existing items
+    filtered_list = [
+        item for item in state.shopping_list.shopping_list if item.item_name.lower() not in existing_item_list
+    ]
+
+    result = database_service.save_to_shopping_list(
+        user_id=state.user_id,
+        shopping_list=filtered_list,
+    )
 
     return {
         "inserted_shopping_list": list(map(lambda item: item.item_name, result))
