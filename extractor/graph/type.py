@@ -49,3 +49,4 @@ class State(BaseModel):
     preference: UserPreference | None = None
     inserted_preferences: Annotated[List[str], operator.add] = []
     inserted_shopping_list: List[str] = []
+    extract_only_preferences: bool = False
