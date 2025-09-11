@@ -9,7 +9,10 @@ from langgraph.types import Command
 from pytidb import Table
 from starlette.responses import StreamingResponse
 
-from di.dependencies import get_preference_table, get_checkpoint_saver
+from db.model.category import CategoryTable
+from db.model.preference_table import PreferenceTable
+from db.model.shopping_list_table import ShoppingListTable
+from di.dependencies import get_preference_table, get_checkpoint_saver, get_shopping_list_table, get_category_table
 from graph.builder import build_graph
 from graph.type import StreamMessage, Quiz, SuggestedProductList
 from server.model.api_response import ApiResponse
@@ -45,7 +48,9 @@ async def get_product_recommendation(
 
 @router.post("/quiz_resume", response_model=ApiResponse[SuggestedProductList])
 async def quiz_resume(
-        table: Annotated[Table, Depends(get_preference_table)],
+        preference_table: Annotated[PreferenceTable, Depends(get_preference_table)],
+        shopping_list_table: Annotated[ShoppingListTable, Depends(get_shopping_list_table)],
+        category_table: Annotated[CategoryTable, Depends(get_category_table)],
         checkpointer: Annotated[InMemorySaver, Depends(get_checkpoint_saver)],
         body: QuizResumeRequest,
 ):
@@ -53,7 +58,12 @@ async def quiz_resume(
 
     result = await graph.ainvoke(
         Command(resume={"quiz_results": body.question_and_answers}),
-        config=_get_config(table=table, thread_id=body.thread_id)
+        config=_get_config(
+            thread_id=body.thread_id,
+            preference_table=preference_table,
+            shopping_list_table=shopping_list_table,
+            category_table=category_table,
+        )
     )
 
     return ApiResponse[SuggestedProductList](
@@ -73,7 +83,7 @@ async def _workflow_stream_generator(
 
     stream = graph.astream(
         input={"image_base64": image_base64, "user_id": user_id},
-        config=_get_config(table=table, thread_id=thread_id),
+        config=_get_config(preference_table=table, thread_id=thread_id),
         stream_mode=["custom", "updates"],
     )
 
@@ -105,10 +115,17 @@ async def _workflow_stream_generator(
             yield json.dumps(message | {"thread_id": thread_id})
 
 
-def _get_config(table: Table, thread_id: str):
+def _get_config(
+        preference_table: PreferenceTable,
+        shopping_list_table: ShoppingListTable,
+        category_table: CategoryTable,
+        thread_id: str
+):
     return {
         "configurable": {
-            "preference_table": table,
             "thread_id": thread_id,
+            "preference_table": preference_table,
+            "shopping_list_table": shopping_list_table,
+            "category": category_table,
         }
     }
