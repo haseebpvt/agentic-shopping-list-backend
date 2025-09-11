@@ -11,7 +11,8 @@ from graph.nodes import (
     product_suggestion_or_quiz_router,
     quiz_generation_node,
     user_interrupt_quiz_node,
-    has_product_router
+    has_product_router,
+    save_user_preferences_node
 )
 from graph.type import State
 from util.test_image_2 import data
@@ -26,6 +27,7 @@ def build_graph(checkpointer: InMemorySaver):
     builder.add_node("analyse_preferences", analyse_if_enough_preferences_available)
     builder.add_node("quiz_generation_node", quiz_generation_node)
     builder.add_node("user_interrupt_quiz_node", user_interrupt_quiz_node)
+    builder.add_node("save_user_preferences_node", save_user_preferences_node)
     builder.add_node("product_suggestion_node", product_suggestion_node)
 
     builder.add_edge(START, "describe_image_node")
@@ -48,6 +50,7 @@ def build_graph(checkpointer: InMemorySaver):
         }
     )
     builder.add_edge("quiz_generation_node", "user_interrupt_quiz_node")
+    builder.add_edge("user_interrupt_quiz_node", "save_user_preferences_node")
     builder.add_edge("user_interrupt_quiz_node", "product_suggestion_node")
     builder.add_edge("product_suggestion_node", END)
 
