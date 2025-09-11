@@ -1,16 +1,21 @@
-from pytidb import Session
+import time
+from typing import List
+
+from pytidb import Session, Table
 from pytidb import TiDBClient
 from pytidb.sql import select, update, delete
 
 from db.model.category import CategoryTable
 from db.model.preference_table import PreferenceTable
 from db.model.shopping_list_table import ShoppingListTable
+from extractor.graph.type import ShoppingItem
 
 
 # noinspection PyTypeChecker
 class DatabaseService:
-    def __init__(self, client: TiDBClient):
+    def __init__(self, client: TiDBClient, shopping_list_table: Table):
         self.client = client
+        self.shopping_list_table = shopping_list_table
 
     def get_shopping_list(self, user_id: str):
         query = (
@@ -23,6 +28,28 @@ class DatabaseService:
             result = session.exec(query).all()
 
         return result
+
+    def save_to_shopping_list(
+            self,
+            user_id: str,
+            shopping_list: List[ShoppingItem],
+    ):
+        shopping_list_table_data = list(
+            map(
+                lambda item: ShoppingListTable(
+                    user_id=user_id,
+                    item_name=item.item_name,
+                    quantity=item.quantity,
+                    unit="",
+                    timestamp=time.time(),
+                    category_id=item.category_id,
+                    note=item.note,
+                ),
+                shopping_list,
+            )
+        )
+
+        return self.shopping_list_table.bulk_insert(shopping_list_table_data)
 
     def mark_product_purchased(self, item_id: int, is_purchased: bool):
         query = (

@@ -47,8 +47,14 @@ def get_category_table(tidb_client: Annotated[TiDBClient, Depends(get_tidb_conne
     return tidb_client.open_table("category")
 
 
-def get_database_service(tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)]):
-    return DatabaseService(client=tidb_client)
+def get_database_service(
+        tidb_client: Annotated[TiDBClient, Depends(get_tidb_connection)],
+        shopping_list_table: Annotated[ShoppingListTable, Depends(get_shopping_list_table)]
+):
+    return DatabaseService(
+        client=tidb_client,
+        shopping_list_table=shopping_list_table,
+    )
 
 
 in_memory_saver = InMemorySaver()
