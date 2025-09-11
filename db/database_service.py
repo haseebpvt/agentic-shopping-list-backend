@@ -92,6 +92,14 @@ class DatabaseService:
 
         self._exec_query(query)
 
+    def get_categories(self):
+        query = select(CategoryTable)
+
+        with Session(self.client.db_engine) as session:
+            result = session.exec(query).all()
+
+        return result
+
     def _exec_query(self, query):
         with Session(self.client.db_engine) as session:
             session.exec(query)
