@@ -29,7 +29,7 @@ async def get_shopping_list(
 async def mark_purchased(
         database_service: Annotated[DatabaseService, Depends(get_database_service)],
         item_id: int = Form(...),
-        is_purchased: bool  = Form(...),
+        is_purchased: bool = Form(...),
 ):
     database_service.mark_product_purchased(item_id=item_id, is_purchased=is_purchased)
 

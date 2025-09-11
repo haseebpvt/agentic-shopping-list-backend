@@ -6,7 +6,6 @@ from uuid import uuid4
 from fastapi import UploadFile, File, Form, Depends, APIRouter
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.types import Command
-from pytidb import Table
 from starlette.responses import StreamingResponse
 
 from db.model.category import CategoryTable
