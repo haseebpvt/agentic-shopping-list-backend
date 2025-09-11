@@ -6,7 +6,7 @@ from db.database_service import DatabaseService
 from db.model.category import CategoryTable
 from db.model.preference_table import PreferenceTable
 from extractor.graph.type import State, ShoppingAndPreferenceExtraction, IsDuplicatePrompt, PreferenceSearchWorkerState, \
-    Category
+    Category, ShoppingItem, ShoppingList
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 
@@ -34,7 +34,9 @@ def extract_shopping_and_preference_node(state: State):
 
     # If the configuration passed specify only preference list is required to be extracted
     # we can simply use an empty array in place of shopping list items.
-    shopping_list = structured_output.shopping_list if not state.extract_only_preferences else []
+    shopping_list = structured_output.shopping_list if not state.extract_only_preferences else ShoppingList(
+        shopping_list=[]
+    )
 
     return {"shopping_list": shopping_list, "preference": structured_output.preference}
 
