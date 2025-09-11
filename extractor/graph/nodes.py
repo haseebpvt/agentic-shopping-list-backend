@@ -96,9 +96,21 @@ def save_shopping_list_node(state: State, config: RunnableConfig):
 
     database_service: DatabaseService = config.get("configurable", {}).get("database_service")
 
+    # Get the list of existing unpurchased items list
+    existing_item_list = database_service.does_product_names_duplicate_exists(
+        user_id=state.user_id,
+        product_names=list(map(lambda item: item.item_name.lower(), state.shopping_list.shopping_list))
+    )
+
+    # We don't want to add the items to shopping list if the exact items is already in
+    # So create a list which doesn't include existing items
+    filtered_list = [
+        item for item in state.shopping_list.shopping_list if item.item_name.lower() not in existing_item_list
+    ]
+
     result = database_service.save_to_shopping_list(
         user_id=state.user_id,
-        shopping_list=state.shopping_list.shopping_list,
+        shopping_list=filtered_list,
     )
 
     return {
