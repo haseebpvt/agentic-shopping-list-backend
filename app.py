@@ -1,11 +1,14 @@
 import uvicorn
+from dotenv import load_dotenv
 from fastapi import FastAPI
 
+from server.route.category_route import router as category_route
+from server.route.extractor_route import router as extractor_route
 from server.route.preferences_route import router as preference_route
 from server.route.product_recommendation_route import router as product_recommendation_route
 from server.route.shopping_list_route import router as shopping_list_route
-from server.route.extractor_route import router as extractor_route
-from server.route.category_route import router as category_route
+
+load_dotenv()
 
 app = FastAPI(root_path="/api")
 
