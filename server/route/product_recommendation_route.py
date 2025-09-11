@@ -23,7 +23,9 @@ router = APIRouter()
 
 @router.post("/get_product_recommendation")
 async def get_product_recommendation(
-        table: Annotated[Table, Depends(get_preference_table)],
+        preference_table: Annotated[PreferenceTable, Depends(get_preference_table)],
+        shopping_list_table: Annotated[ShoppingListTable, Depends(get_shopping_list_table)],
+        category_table: Annotated[CategoryTable, Depends(get_category_table)],
         checkpointer: Annotated[InMemorySaver, Depends(get_checkpoint_saver)],
         file: UploadFile = File(...),
         user_id: str = Form(...),
@@ -36,11 +38,13 @@ async def get_product_recommendation(
 
     return StreamingResponse(
         _workflow_stream_generator(
-            table=table,
             image_base64=str(image_base64),
             user_id=user_id,
             thread_id=thread_id,
             checkpointer=checkpointer,
+            preference_table=preference_table,
+            shopping_list_table=shopping_list_table,
+            category_table=category_table,
         ),
         media_type="application/json",
     )
@@ -73,7 +77,9 @@ async def quiz_resume(
 
 
 async def _workflow_stream_generator(
-        table: Table,
+        preference_table: PreferenceTable,
+        shopping_list_table: ShoppingListTable,
+        category_table: CategoryTable,
         image_base64: str,
         user_id: str,
         thread_id: str,
@@ -83,7 +89,12 @@ async def _workflow_stream_generator(
 
     stream = graph.astream(
         input={"image_base64": image_base64, "user_id": user_id},
-        config=_get_config(preference_table=table, thread_id=thread_id),
+        config=_get_config(
+            thread_id=thread_id,
+            preference_table=preference_table,
+            shopping_list_table=shopping_list_table,
+            category_table=category_table,
+        ),
         stream_mode=["custom", "updates"],
     )
 
