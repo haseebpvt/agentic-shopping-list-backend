@@ -5,6 +5,7 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.config import get_stream_writer
 from langgraph.types import interrupt
 
+from extractor.graph.builder import build_graph as build_extractor_graph
 from graph.type import State, SuggestedProductList, ProductList, PromptList, EnoughPreferences, Quiz, StreamMessage
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
@@ -134,6 +135,31 @@ def user_interrupt_quiz_node(state: State):
     response = interrupt(state.quiz.model_dump_json())
 
     return {"quiz_preferences": response["quiz_results"]}
+
+
+def save_user_preferences_node(state: State, config: RunnableConfig):
+    llm = get_llm()
+
+    data = {
+        "quiz_preferences": state.quiz_preferences,
+        "product_items": list(map(lambda item: item.title, state.product_items.products))
+    }
+    prompt = get_prompt_template("save_quiz_preference", **data)
+
+    # Generate the summary of quiz preferences provided by the user
+    llm_response = llm.invoke(prompt)
+
+    graph = build_extractor_graph()
+    graph.invoke(
+        {
+            "user_id": "8",
+            "user_text": llm_response.content,
+            "extract_only_preferences": True
+        },
+        config=config
+    )
+
+    return {}
 
 
 def product_suggestion_node(state: State):
