@@ -30,7 +30,7 @@ async def insert_shopping_list_and_preferences(
     }
 
     try:
-        # TODO: Find out why fanout cause issue with state variable
+        # TODO: Find out why fanout cause InvalidUpdateError exception with state variable
         await graph.ainvoke(
             input={"user_id": user_id, "user_text": user_text},
             config=config,
