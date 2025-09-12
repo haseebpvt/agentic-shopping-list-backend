@@ -46,6 +46,11 @@ async def get_product_recommendation(
             category_table=category_table,
         ),
         media_type="application/json",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        }
     )
 
 
@@ -113,16 +118,16 @@ async def _workflow_stream_generator(
                         thread_id=thread_id,
                     )
 
-                    yield message.model_dump_json()
+                    yield f"{message.model_dump_json()}\n"
 
                 continue
 
             if "product_suggestion_node" in event[1]:
                 suggested_product_list = event[1]["product_suggestion_node"]["suggested_products"]
-                yield suggested_product_list.model_dump_json()
+                yield f"{suggested_product_list.model_dump_json()}\n"
         if event[0] == "custom":
             message = event[1]
-            yield json.dumps(message | {"thread_id": thread_id})
+            yield f"{json.dumps(message | {'thread_id': thread_id})}\n"
 
 
 def _get_config(
