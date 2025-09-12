@@ -9,10 +9,10 @@ load_dotenv()
 ModelSize = Literal["nano", "mini", "large"]
 
 MODEL_MAP: dict[ModelSize | None, str] = {
-    "nano": "gpt-5-nano-2025-08-07",
-    "mini": "gpt-5-mini-2025-08-07",
-    "large": "gpt-5-2025-08-07",
-    None: "gpt-5-2025-08-07",
+    "nano": "gpt-4.1-nano-2025-04-14",
+    "mini": "gpt-4.1-mini-2025-04-14",
+    "large": "gpt-4.1-2025-04-14",
+    None: "gpt-4.1-2025-04-14",
 }
 
 
@@ -22,5 +22,5 @@ def get_llm(model_size: Optional[ModelSize] = None) -> BaseChatModel:
     :param model_size: Model size based on task complexity. Available options (nano, mini, large)
     :return: LangChain's BaseChatModel
     """
-    model_name = MODEL_MAP.get(model_size, "gpt-5-2025-08-07")
+    model_name = MODEL_MAP.get(model_size, "gpt-4.1-2025-04-14")
     return ChatOpenAI(model=model_name)
