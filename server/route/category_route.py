@@ -45,7 +45,7 @@ async def identify_category(
         **{"categories": formatted_category_list, "item_name": item_name},
     )
 
-    llm = get_llm()
+    llm = get_llm(model_size="nano")
     result = llm.with_structured_output(CategoryList).invoke(prompt)
 
     return ApiResponse(
