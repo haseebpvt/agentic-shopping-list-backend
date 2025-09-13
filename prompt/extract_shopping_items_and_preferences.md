@@ -29,8 +29,8 @@ Your task is to analyze the text and produce **two outputs**:
 
 **Shopping List:**  
 * Chocolate cake — Category ID: 3  
-* Birthday candles — Category ID: 8 (AI Recommended)  
-* Paper plates & cups — Category ID: 9 (AI Recommended)  
+* Birthday candles — Category ID: 8 (This is AI recommended)  
+* Paper plates & cups — Category ID: 9 (This is AI recommended)  
 
 ---
 
