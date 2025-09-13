@@ -15,3 +15,4 @@ class ShoppingListTable(TableModel):
     category_id: int = Field()
     note: str = FullTextField()
     is_purchased: bool = Field(default=False)
+    is_ai_suggestion: bool = Field()
