@@ -14,6 +14,7 @@ class ShoppingItem(BaseModel):
     item_name: str
     quantity: str
     category_id: int
+    is_ai_recommended: bool
     note: str
 
 

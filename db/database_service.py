@@ -59,6 +59,7 @@ class DatabaseService:
                     unit="",
                     timestamp=time.time(),
                     category_id=item.category_id,
+                    is_ai_suggestion=item.is_ai_recommended,
                     note=item.note,
                 ),
                 shopping_list,
