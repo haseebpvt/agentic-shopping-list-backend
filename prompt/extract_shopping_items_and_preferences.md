@@ -7,19 +7,30 @@ Your task is to analyze the text and produce **two outputs**:
 
 ---
 
-## 1. Shopping List
+### Shopping List
+* Extract all items the user intends to buy.  
+* Include details such as **quantity, brand, or notes** if mentioned.  
+* For each product, also include the **Category ID** by matching it to the most appropriate category from the provided Category List.  
+* If the text **strongly indicates** related needs (e.g., birthday party, recipe preparation), you may add up to **2 additional recommended items**. Mark these clearly with **(AI Recommended)** at the end of the line.  
+  * Only add recommendations if there’s a **very evident context** in the user’s message.  
+  * If there’s no strong hint, list **only the explicitly mentioned items**.
 
-* Extract all items the user intends to buy.
-* Include details such as **quantity, brand, or notes** if mentioned.
-* For each product, also include the **Category ID** by matching it to the most appropriate category from the provided Category List.
+### Example 1 (no AI Recommended):
+**User text:**  
+*"I need to get 2 packs of Dove soap and maybe some fresh apples."*  
 
-**Example:**
-User text: *“I need to get 2 packs of Dove soap and maybe some fresh apples.”*
+**Shopping List:**  
+* Dove soap (2 packs) — Category ID: 5  
+* Fresh apples — Category ID: 2
 
-* Shopping List:
+### Example 2 (with AI Recommended):  
+**User text:**  
+*"It’s my daughter’s birthday next week, so I need to buy a chocolate cake."*  
 
-  * Dove soap (2 packs) — Category ID: 5
-  * Fresh apples — Category ID: 2
+**Shopping List:**  
+* Chocolate cake — Category ID: 3  
+* Birthday candles — Category ID: 8 - (This is AI recommended)  
+* Paper plates & cups — Category ID: 9 - (This is AI recommended)  
 
 ---
 
