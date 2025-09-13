@@ -3,6 +3,7 @@ from typing import List
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 from langgraph.config import get_stream_writer
+from langgraph.errors import InvalidUpdateError
 from langgraph.types import interrupt
 
 from extractor.graph.builder import build_graph as build_extractor_graph
@@ -152,14 +153,19 @@ def save_user_preferences_node(state: State, config: RunnableConfig):
     # Use the extractor workflow to insert the preference
     # The extractor workflow take care of the duplicate preferences if any
     graph = build_extractor_graph()
-    graph.invoke(
-        {
-            "user_id": "8",
-            "user_text": llm_response.content,
-            "extract_only_preferences": True
-        },
-        config=config
-    )
+
+    try:
+        # TODO: Find out why fanout cause InvalidUpdateError exception with state variable
+        graph.invoke(
+            {
+                "user_id": "8",
+                "user_text": llm_response.content,
+                "extract_only_preferences": True
+            },
+            config=config
+        )
+    except InvalidUpdateError as e:
+        print(e)
 
     return {}
 
