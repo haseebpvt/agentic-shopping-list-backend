@@ -38,6 +38,18 @@ async def mark_purchased(
     )
 
 
+@router.delete("/delete")
+async def delete_shopping_list_item(
+        database_service: Annotated[DatabaseService, Depends(get_database_service)],
+        item_id: int = Form(...),
+):
+    database_service.delete_shopping_list_item(item_id=item_id)
+
+    return ApiResponse(
+        success=True,
+    )
+
+
 def _process_shopping_list_result(data):
     shopping_list, category = data
     shopping_list_json = json.loads(shopping_list.model_dump_json())
