@@ -67,6 +67,14 @@ class DatabaseService:
 
         return self.shopping_list_table.bulk_insert(shopping_list_table_data)
 
+    def delete_shopping_list_item(self, item_id: int):
+        query = (
+            delete(ShoppingListTable)
+            .where(ShoppingListTable.id == item_id)
+        )
+
+        self._exec_query(query)
+
     def mark_product_purchased(self, item_id: int, is_purchased: bool):
         query = (
             update(ShoppingListTable)
