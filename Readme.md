@@ -224,18 +224,3 @@ pytest tests/
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🔮 Future Enhancements
-
-- [ ] Support for multiple image formats and batch processing
-- [ ] Integration with popular grocery store APIs
-- [ ] Mobile app companion
-- [ ] Price comparison and deal detection
-- [ ] Nutritional analysis and dietary recommendations
-- [ ] Social sharing and collaborative shopping lists
-- [ ] Voice interface integration
-- [ ] Multi-language support
-
----
-
-*Built with ❤️ using FastAPI, LangGraph, and OpenAI*
