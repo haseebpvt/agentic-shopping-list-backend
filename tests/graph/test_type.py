@@ -1,5 +1,4 @@
-import pytest
-from graph.type import Product
+from recommender.graph.type import Product
 
 def test_product_pretty():
     # Given

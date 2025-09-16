@@ -2,7 +2,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import StateGraph, START, END
 
 from di.dependencies import get_tidb_connection, get_preference_table
-from graph.nodes import (
+from recommender.graph.nodes import (
     describe_image_node,
     generate_prompts_node,
     vector_search_node,
@@ -14,7 +14,7 @@ from graph.nodes import (
     has_product_router,
     save_user_preferences_node
 )
-from graph.type import State
+from recommender.graph.type import State
 from util.test_image_2 import data
 
 
