@@ -12,7 +12,7 @@ The system is built on a **multi-agent graph-based architecture** using LangGrap
 
 ### 🎯 Core Workflows
 
-1. **Product Recommendation Workflow** (`graph/`)
+1. **Product Recommendation Workflow** (`recommender/graph/`)
    - Analyzes product images using OpenAI Vision API
    - Searches for relevant user preferences using vector similarity
    - Generates personalized product suggestions
@@ -192,10 +192,11 @@ The server will start on `http://localhost:8000` with API documentation availabl
 │   ├── route/          # FastAPI route handlers
 │   └── model/          # API request/response models
 │
-├── graph/              # Main recommendation workflow
-│   ├── builder.py      # Graph construction
-│   ├── nodes.py        # Workflow nodes
-│   └── type.py         # Type definitions
+├── recommender/        # Product recommendation system
+│   └── graph/          # Main recommendation workflow
+│       ├── builder.py  # Graph construction
+│       ├── nodes.py    # Workflow nodes
+│       └── type.py     # Type definitions
 │
 ├── extractor/          # Data extraction workflow
 │   └── graph/
