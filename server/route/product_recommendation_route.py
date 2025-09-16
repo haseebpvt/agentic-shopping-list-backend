@@ -12,8 +12,8 @@ from db.model.category import CategoryTable
 from db.model.preference_table import PreferenceTable
 from db.model.shopping_list_table import ShoppingListTable
 from di.dependencies import get_preference_table, get_checkpoint_saver, get_shopping_list_table, get_category_table
-from graph.builder import build_graph
-from graph.type import StreamMessage, Quiz, SuggestedProductList
+from recommender.graph.builder import build_graph
+from recommender.graph.type import StreamMessage, Quiz, SuggestedProductList
 from server.model.api_response import ApiResponse
 from server.model.quiz_resume_request import QuizResumeRequest
 

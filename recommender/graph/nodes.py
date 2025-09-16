@@ -7,7 +7,7 @@ from langgraph.errors import InvalidUpdateError
 from langgraph.types import interrupt
 
 from extractor.graph.builder import build_graph as build_extractor_graph
-from graph.type import State, SuggestedProductList, ProductList, PromptList, EnoughPreferences, Quiz, StreamMessage
+from recommender.graph.type import State, SuggestedProductList, ProductList, PromptList, EnoughPreferences, Quiz, StreamMessage
 from llm.llm import get_llm
 from prompt.prompt_loader import get_prompt_template
 from retriever.graph.builder import build_graph
